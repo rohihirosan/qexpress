@@ -1,0 +1,825 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Paper Generator App</title>
+  
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="theme-color" content="#1a73e8">
+  
+  <script>
+    window.MathJax = {
+      tex: { inlineMath: [['$', '$'], ['\\(', '\\)']] },
+      svg: { fontCache: 'local' }
+    };
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  
+  <style>
+    :root {
+      --primary: #1a73e8;
+      --bg: #eef2f5;
+      --card-bg: #ffffff;
+      --text: #202124;
+      --danger: #d93025;
+    }
+
+    * { box-sizing: border-box; }
+    
+    html, body {
+      width: 100%;
+      max-width: 100vw;
+      overflow-x: hidden;
+      margin: 0;
+      padding: 0;
+      touch-action: pan-x pan-y;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    .app-header {
+      width: 100%;
+      background: var(--primary);
+      color: #ffffff;
+      padding: 12px 16px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .app-header h1 { font-size: 18px; font-weight: 500; margin: 0; }
+
+    .app-layout {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 16px;
+      padding: 12px;
+      max-width: 1400px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    .editor-col, .preview-col {
+      width: 100%;
+      max-width: 100%;
+      min-width: 0;
+    }
+
+    @media (min-width: 900px) {
+      .app-layout {
+        grid-template-columns: 380px 1fr;
+        align-items: start;
+      }
+      .mobile-tabs { display: none !important; }
+      .editor-col, .preview-col { display: block !important; }
+      .preview-col { position: sticky; top: 60px; }
+    }
+
+    @media (max-width: 899px) {
+      .mobile-tabs {
+        display: flex;
+        background: #e0e0e0;
+        border-radius: 8px;
+        padding: 4px;
+        margin-bottom: 12px;
+        width: 100%;
+      }
+      .tab-btn {
+        flex: 1;
+        padding: 10px;
+        border: none;
+        background: transparent;
+        font-weight: 600;
+        border-radius: 6px;
+        cursor: pointer;
+      }
+      .tab-btn.active {
+        background: #fff;
+        color: var(--primary);
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      }
+      .preview-col { display: none; }
+    }
+
+    .card {
+      background: var(--card-bg);
+      border: 1px solid #dadce0;
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 16px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+
+    .section-label {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    label { display: block; font-size: 12px; color: #5f6368; margin-top: 8px; margin-bottom: 4px; }
+
+    input, select, textarea {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid #dadce0;
+      border-radius: 8px;
+      font-size: 14px;
+      background: #fff;
+    }
+
+    .row { display: flex; gap: 8px; }
+
+    .math-toolbar { display: flex; flex-wrap: wrap; gap: 4px; margin: 6px 0; }
+    .math-btn {
+      padding: 6px 10px !important;
+      font-size: 13px !important;
+      background: #f1f3f4 !important;
+      border: 1px solid #dadce0 !important;
+      border-radius: 6px !important;
+      cursor: pointer !important;
+    }
+
+    .btn-group { display: flex; flex-direction: column; gap: 8px; margin-top: 14px; }
+    
+    button.main-btn {
+      font-size: 14px;
+      font-weight: 500;
+      padding: 11px;
+      border-radius: 8px;
+      cursor: pointer;
+      border: none;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+    .btn-primary { background: var(--primary); color: #fff; }
+    .btn-download { background: #34a853; color: #fff; }
+    .btn-danger { background: var(--danger); color: #fff; }
+
+    .paper-wrapper {
+      background: #525659;
+      padding: 12px;
+      border-radius: 12px;
+      max-height: calc(100vh - 100px);
+      overflow: auto;
+      width: 100%;
+      touch-action: pan-x pan-y;
+      position: relative;
+    }
+
+    .paper-preview {
+      background: #ffffff;
+      padding: 40px 35px;
+      font-family: 'Times New Roman', Times, serif;
+      width: 794px;
+      min-width: 794px;
+      min-height: 1123px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      word-break: break-word;
+      margin: 0 auto;
+      transform-origin: top left;
+      transition: transform 0.05s linear;
+    }
+
+    .paper-header { text-align: center; border-bottom: 2px solid #000; padding-bottom: 8px; margin-bottom: 12px; }
+    .paper-header h2 { margin: 0; font-size: 20px; text-transform: uppercase; }
+    .paper-header h4 { margin: 4px 0 0 0; font-size: 14px; font-weight: normal; }
+
+    .paper-info {
+      display: flex;
+      justify-content: space-between;
+      font-weight: bold;
+      font-size: 14px;
+      border-bottom: 1px solid #000;
+      padding-bottom: 6px;
+      margin-bottom: 16px;
+    }
+
+    .sec-header { text-align: center; font-weight: bold; text-decoration: underline; margin: 16px 0 10px 0; font-size: 15px; }
+    .q-block { margin-bottom: 14px; font-size: 15px; line-height: 1.4; }
+    .q-row { display: flex; justify-content: space-between; gap: 8px; }
+    .q-text { display: flex; gap: 6px; flex: 1; align-items: baseline; }
+    .q-num { flex-shrink: 0; white-space: nowrap; }
+    .q-content { flex: 1; word-break: break-word; }
+    .options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; padding-left: 28px; margin-top: 6px; }
+    
+    .q-actions { display: inline-flex; gap: 4px; margin-left: 8px; font-family: sans-serif; }
+    .btn-act { background: #f1f3f4; border: 1px solid #ccc; border-radius: 4px; padding: 2px 6px; font-size: 11px; cursor: pointer; }
+    .btn-del:hover { background: #fce8e6; color: #c5221f; }
+
+    mjx-container[jax="SVG"] {
+      display: inline-block !important;
+      margin: 0 2px !important;
+      vertical-align: middle !important;
+    }
+    mjx-container[jax="SVG"] > svg {
+      display: inline-block !important;
+      vertical-align: middle !important;
+    }
+
+    .zoom-controls {
+      position: sticky;
+      bottom: 12px;
+      left: 12px;
+      display: inline-flex;
+      gap: 6px;
+      z-index: 10;
+      background: rgba(0,0,0,0.4);
+      padding: 4px 8px;
+      border-radius: 20px;
+    }
+    .zoom-btn {
+      background: rgba(0,0,0,0.7);
+      color: #fff;
+      border: none;
+      border-radius: 50%;
+      width: 32px;
+      height: 32px;
+      font-size: 14px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+  </style>
+</head>
+<body>
+
+<div class="app-header">
+  <h1>Paper Generator</h1>
+  <span style="font-size: 12px; opacity: 0.9;">Standard Board Layout</span>
+</div>
+
+<div class="app-layout">
+
+  <div class="mobile-tabs" style="grid-column: 1 / -1;">
+    <button class="tab-btn active" onclick="switchMobileTab('editor')">📝 Question Form</button>
+    <button class="tab-btn" onclick="switchMobileTab('preview')">📄 Live Paper Preview</button>
+  </div>
+
+  <div class="editor-col" id="editorCol">
+    
+    <div class="card">
+      <div class="section-label">1. Basic Details</div>
+      <label>School / Institution</label>
+      <input type="text" id="school" value="HIGH SCHOOL, BIHAR" oninput="updatePaper()">
+
+      <label>Exam Title</label>
+      <input type="text" id="exam" value="ANNUAL EXAMINATION 2026" oninput="updatePaper()">
+
+      <label>Class & Subject</label>
+      <input type="text" id="sub" value="Class 10th | Mathematics" oninput="updatePaper()">
+
+      <div class="row">
+        <div style="flex:1;">
+          <label>Time</label>
+          <input type="text" id="time" value="3 Hours" oninput="updatePaper()">
+        </div>
+        <div style="flex:1;">
+          <label>Full Marks</label>
+          <input type="text" id="marks" value="100" oninput="updatePaper()">
+        </div>
+      </div>
+      <label>Watermark Text</label>
+      <input type="text" id="watermarkText" value="HIGH SCHOOL, BIHAR" oninput="updatePaper()">
+    </div>
+
+    <div class="card">
+      <div class="section-label">2. Add Question</div>
+      <label>Question Type</label>
+      <select id="qType" onchange="toggleMCQ()">
+        <option value="MCQ">Section A: MCQ (1 Mark)</option>
+        <option value="SHORT">Section B: Short (2 Marks)</option>
+        <option value="LONG">Section C: Long (5 Marks)</option>
+      </select>
+
+      <label>Math Toolbar</label>
+      <div class="math-toolbar">
+        <button type="button" class="math-btn" onclick="insertMath('x^2')">x²</button>
+        <button type="button" class="math-btn" onclick="insertMath('\\frac{a}{b}')">a/b</button>
+        <button type="button" class="math-btn" onclick="insertMath('\\sqrt{x}')">√x</button>
+        <button type="button" class="math-btn" onclick="insertMath('^\\circ')">°</button>
+        <button type="button" class="math-btn" onclick="insertMath('\\theta')">θ</button>
+        <button type="button" class="math-btn" onclick="insertMath('\\pi')">π</button>
+      </div>
+
+      <label>Question Text</label>
+      <textarea id="qText" rows="3" placeholder="Sawal likhein..."></textarea>
+
+      <div id="mcqBox">
+        <div class="row" style="margin-top:6px;">
+          <input type="text" id="optA" placeholder="Option A">
+          <input type="text" id="optB" placeholder="Option B">
+        </div>
+        <div class="row" style="margin-top:6px;">
+          <input type="text" id="optC" placeholder="Option C">
+          <input type="text" id="optD" placeholder="Option D">
+        </div>
+      </div>
+
+      <label>Marks</label>
+      <input type="number" id="qMarks" value="1">
+
+      <div class="btn-group">
+        <button type="button" class="main-btn btn-primary" onclick="addQuestion()">+ Add Question</button>
+        <button type="button" class="main-btn btn-download" id="dlBtn" onclick="downloadPDF()">📥 Export PDF</button>
+        <button type="button" class="main-btn btn-danger" onclick="clearAllQuestions()">🗑️ Clear All Questions</button>
+        
+        <div class="row" style="margin-top: 4px;">
+          <button type="button" class="math-btn" style="flex:1;" onclick="exportJSON()">💾 Save Backup (.json)</button>
+          <label class="math-btn" style="flex:1; text-align:center; cursor:pointer; margin:0; display:flex; align-items:center; justify-content:center;">
+            📂 Load Backup
+            <input type="file" id="jsonInput" accept=".json" onchange="importJSON(event)" style="display:none;">
+          </label>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="preview-col" id="previewCol">
+    <div class="paper-wrapper" id="paperWrapper">
+      
+      <div class="zoom-controls">
+        <button class="zoom-btn" onclick="adjustZoom(0.1)">🔍+</button>
+        <button class="zoom-btn" onclick="adjustZoom(-0.1)">🔍-</button>
+        <button class="zoom-btn" onclick="resetZoom()">↺</button>
+      </div>
+
+      <div class="paper-preview" id="paper">
+        <div class="paper-header">
+          <h2 id="pSchool">HIGH SCHOOL, BIHAR</h2>
+          <h4 id="pExam">ANNUAL EXAMINATION 2026</h4>
+          <h4 id="pSub">Class 10th | Mathematics</h4>
+        </div>
+
+        <div class="paper-info">
+          <span>Time: <span id="pTime">3 Hours</span></span>
+          <span>Full Marks: <span id="pMarks">100</span></span>
+        </div>
+
+        <div id="secMCQ" style="display:none;">
+          <div class="sec-header">SECTION - A (Objective Questions)</div>
+          <div id="listMCQ"></div>
+        </div>
+
+        <div id="secSHORT" style="display:none;">
+          <div class="sec-header">SECTION - B (Short Answer Questions)</div>
+          <div id="listSHORT"></div>
+        </div>
+
+        <div id="secLONG" style="display:none;">
+          <div class="sec-header">SECTION - C (Long Answer Questions)</div>
+          <div id="listLONG"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  let questionsData = [];
+
+  function switchMobileTab(tab) {
+    const editor = document.getElementById('editorCol');
+    const preview = document.getElementById('previewCol');
+    const btns = document.querySelectorAll('.tab-btn');
+
+    if (tab === 'editor') {
+      editor.style.display = 'block';
+      preview.style.display = 'none';
+      btns[0].classList.add('active');
+      btns[1].classList.remove('active');
+    } else {
+      editor.style.display = 'none';
+      preview.style.display = 'block';
+      btns[1].classList.add('active');
+      btns[0].classList.remove('active');
+    }
+  }
+
+  function updatePaper() {
+    document.getElementById('pSchool').innerText = document.getElementById('school').value;
+    document.getElementById('pExam').innerText = document.getElementById('exam').value;
+    document.getElementById('pSub').innerText = document.getElementById('sub').value;
+    document.getElementById('pTime').innerText = document.getElementById('time').value;
+    document.getElementById('pMarks').innerText = document.getElementById('marks').value;
+    saveDraft();
+  }
+
+  function toggleMCQ() {
+    const type = document.getElementById('qType').value;
+    document.getElementById('mcqBox').style.display = (type === 'MCQ') ? 'block' : 'none';
+    document.getElementById('qMarks').value = (type === 'MCQ') ? 1 : (type === 'SHORT' ? 2 : 5);
+  }
+
+  function insertMath(symbol) {
+    const textarea = document.getElementById('qText');
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+    const text = textarea.value;
+    const formatted = `$${symbol}$`;
+    textarea.value = text.substring(0, start) + formatted + text.substring(end);
+    textarea.focus();
+    textarea.selectionStart = textarea.selectionEnd = start + formatted.length;
+  }
+
+  function addQuestion() {
+    const type = document.getElementById('qType').value;
+    const text = document.getElementById('qText').value.trim();
+    const marks = document.getElementById('qMarks').value;
+
+    if (!text) return alert("Sawal likhein!");
+
+    const newQ = {
+      id: Date.now().toString(),
+      type: type,
+      text: text,
+      marks: marks,
+      optA: document.getElementById('optA').value || '',
+      optB: document.getElementById('optB').value || '',
+      optC: document.getElementById('optC').value || '',
+      optD: document.getElementById('optD').value || ''
+    };
+
+    questionsData.push(newQ);
+    saveDraft();
+    renderAllQuestionsFromData();
+
+    document.getElementById('qText').value = '';
+    document.getElementById('optA').value = '';
+    document.getElementById('optB').value = '';
+    document.getElementById('optC').value = '';
+    document.getElementById('optD').value = '';
+  }
+
+  function saveDraft() {
+    const paperState = {
+      meta: {
+        school: document.getElementById('school').value,
+        exam: document.getElementById('exam').value,
+        sub: document.getElementById('sub').value,
+        time: document.getElementById('time').value,
+        marks: document.getElementById('marks').value,
+        watermarkText: document.getElementById('watermarkText').value
+      },
+      questions: questionsData
+    };
+    localStorage.setItem('paper_draft_data', JSON.stringify(paperState));
+  }
+
+  function loadDraft() {
+    const saved = localStorage.getItem('paper_draft_data');
+    if (!saved) return;
+
+    try {
+      const data = JSON.parse(saved);
+      if (data.meta) {
+        document.getElementById('school').value = data.meta.school || '';
+        document.getElementById('exam').value = data.meta.exam || '';
+        document.getElementById('sub').value = data.meta.sub || '';
+        document.getElementById('time').value = data.meta.time || '';
+        document.getElementById('marks').value = data.meta.marks || '';
+        document.getElementById('watermarkText').value = data.meta.watermarkText || '';
+        
+        document.getElementById('pSchool').innerText = document.getElementById('school').value;
+        document.getElementById('pExam').innerText = document.getElementById('exam').value;
+        document.getElementById('pSub').innerText = document.getElementById('sub').value;
+        document.getElementById('pTime').innerText = document.getElementById('time').value;
+        document.getElementById('pMarks').innerText = document.getElementById('marks').value;
+      }
+      if (data.questions && Array.isArray(data.questions)) {
+        questionsData = data.questions;
+        renderAllQuestionsFromData();
+      }
+    } catch (e) {
+      console.error("Draft load error:", e);
+    }
+  }
+
+  function clearAllQuestions() {
+    const confirmAction = confirm("⚠️ Kya aap poora paper delete karna chahte hain?\nIsse saare add kiye gaye sawal storage se hat jayenge!");
+    if (confirmAction) {
+      questionsData = [];
+      localStorage.removeItem('paper_draft_data');
+      renderAllQuestionsFromData();
+    }
+  }
+
+  function deleteSingleQuestion(id) {
+    questionsData = questionsData.filter(q => q.id !== id);
+    saveDraft();
+    renderAllQuestionsFromData();
+  }
+
+  function editQuestion(id) {
+    const q = questionsData.find(item => item.id === id);
+    if (!q) return;
+
+    document.getElementById('qType').value = q.type;
+    toggleMCQ();
+    document.getElementById('qText').value = q.text;
+    document.getElementById('qMarks').value = q.marks;
+
+    if (q.type === 'MCQ') {
+      document.getElementById('optA').value = q.optA;
+      document.getElementById('optB').value = q.optB;
+      document.getElementById('optC').value = q.optC;
+      document.getElementById('optD').value = q.optD;
+    }
+
+    deleteSingleQuestion(id);
+    if (window.innerWidth < 900) switchMobileTab('editor');
+    document.getElementById('qText').focus();
+  }
+
+  async function renderAllQuestionsFromData() {
+    document.getElementById('listMCQ').innerHTML = '';
+    document.getElementById('listSHORT').innerHTML = '';
+    document.getElementById('listLONG').innerHTML = '';
+
+    ['MCQ', 'SHORT', 'LONG'].forEach(type => {
+      const filtered = questionsData.filter(q => q.type === type);
+      const sec = document.getElementById('sec' + type);
+
+      if (filtered.length === 0) {
+        sec.style.display = 'none';
+      } else {
+        sec.style.display = 'block';
+        const container = document.getElementById('list' + type);
+
+        filtered.forEach((q, idx) => {
+          const qDiv = document.createElement('div');
+          qDiv.className = 'q-block';
+
+          let html = `
+            <div class="q-row">
+              <div class="q-text">
+                <b class="q-num">Q${idx + 1}.</b>
+                <span class="q-content">${q.text}</span>
+              </div>
+              <div style="white-space:nowrap;">
+                [${q.marks}]
+                <span class="q-actions">
+                  <button type="button" class="btn-act" onclick="editQuestion('${q.id}')">✏️</button>
+                  <button type="button" class="btn-act btn-del" onclick="deleteSingleQuestion('${q.id}')">🗑️</button>
+                </span>
+              </div>
+            </div>`;
+
+          if (q.type === 'MCQ') {
+            html += `
+              <div class="options-grid">
+                <span>(A) ${q.optA}</span>
+                <span>(B) ${q.optB}</span>
+                <span>(C) ${q.optC}</span>
+                <span>(D) ${q.optD}</span>
+              </div>`;
+          }
+
+          qDiv.innerHTML = html;
+          container.appendChild(qDiv);
+        });
+      }
+    });
+
+    if (window.MathJax) {
+      await MathJax.typesetPromise([document.getElementById('paper')]);
+    }
+  }
+
+  function exportJSON() {
+    saveDraft();
+    const saved = localStorage.getItem('paper_draft_data');
+    if (!saved) return alert("Pehle kuch questions add karein!");
+
+    const blob = new Blob([saved], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `Question_Paper_${new Date().toISOString().slice(0,10)}.json`;
+    a.click();
+  }
+
+  function importJSON(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      try {
+        const data = JSON.parse(e.target.result);
+        localStorage.setItem('paper_draft_data', JSON.stringify(data));
+        loadDraft();
+        alert("📁 Paper Backup Load Ho Gaya!");
+      } catch (err) {
+        alert("❌ Galat file format!");
+      }
+    };
+    reader.readAsText(file);
+  }
+
+  /* ---------------- PINCH-ZOOM & SCROLL ---------------- */
+  let currentScale = 1;
+  let initialDist = 0;
+  let startScale = 1;
+
+  const wrapper = document.getElementById('paperWrapper');
+  const paper = document.getElementById('paper');
+
+  function applyScale(scale) {
+    currentScale = Math.min(Math.max(0.35, scale), 2.2);
+    paper.style.transform = `scale(${currentScale})`;
+  }
+
+  function adjustZoom(delta) { applyScale(currentScale + delta); }
+  function resetZoom() { applyScale(1); }
+
+  wrapper.addEventListener('touchstart', (e) => {
+    if (e.touches.length === 2) {
+      e.preventDefault();
+      initialDist = Math.hypot(
+        e.touches[0].clientX - e.touches[1].clientX,
+        e.touches[0].clientY - e.touches[1].clientY
+      );
+      startScale = currentScale;
+    }
+  }, { passive: false });
+
+  wrapper.addEventListener('touchmove', (e) => {
+    if (e.touches.length === 2 && initialDist > 0) {
+      e.preventDefault();
+      const currentDist = Math.hypot(
+        e.touches[0].clientX - e.touches[1].clientX,
+        e.touches[0].clientY - e.touches[1].clientY
+      );
+      applyScale(startScale * (currentDist / initialDist));
+    }
+  }, { passive: false });
+
+  wrapper.addEventListener('touchend', (e) => {
+    if (e.touches.length < 2) initialDist = 0;
+  });
+
+  /* ---------------- PDF EXPORT ---------------- */
+  async function downloadPDF() {
+    const btn = document.getElementById('dlBtn');
+    btn.innerText = 'Processing PDF...';
+    btn.disabled = true;
+
+    const oldScale = currentScale;
+    applyScale(1);
+
+    const previewCol = document.getElementById('previewCol');
+    const origDisplay = previewCol.style.display;
+    const origPos = previewCol.style.position;
+    const origLeft = previewCol.style.left;
+    const origTop = previewCol.style.top;
+    const origZIndex = previewCol.style.zIndex;
+
+    previewCol.style.display = 'block';
+    previewCol.style.position = 'fixed';
+    previewCol.style.left = '-9999px';
+    previewCol.style.top = '0px';
+    previewCol.style.zIndex = '-1000';
+
+    const actions = document.querySelectorAll('.q-actions');
+    actions.forEach(a => a.style.display = 'none');
+
+    try {
+      if (window.MathJax) {
+        await MathJax.typesetPromise([paper]);
+      }
+
+      await new Promise(resolve => setTimeout(resolve, 250));
+
+      const canvas = await html2canvas(paper, { 
+        scale: 2, 
+        useCORS: true, 
+        logging: false,
+        windowWidth: 1024 
+      });
+
+      const { jsPDF } = window.jspdf;
+      const pdf = new jsPDF('p', 'mm', 'a4');
+      
+      const pageHeightMm = 297;
+      const marginTopMm = 12;
+      const marginBottomMm = 15;
+      const marginLeftMm = 10;
+      const contentWidthMm = 190;
+      const contentHeightMm = pageHeightMm - marginTopMm - marginBottomMm;
+
+      const pxToMm = contentWidthMm / canvas.width;
+      const maxHeightPx = contentHeightMm / pxToMm;
+
+      const blocks = paper.querySelectorAll('.paper-header, .paper-info, .sec-header, .q-block');
+      const paperRect = paper.getBoundingClientRect();
+      const scale = canvas.width / paperRect.width;
+
+      let currentY = 0;
+      const totalHeightPx = canvas.height;
+      const pageSlices = [];
+
+      while (currentY < totalHeightPx - 15) {
+        let targetY = currentY + maxHeightPx;
+        if (targetY >= totalHeightPx) {
+          pageSlices.push({ startY: currentY, endY: totalHeightPx });
+          break;
+        }
+
+        let splitY = targetY;
+        for (let block of blocks) {
+          const blockRect = block.getBoundingClientRect();
+          const blockTopPx = (blockRect.top - paperRect.top) * scale;
+          const blockBottomPx = (blockRect.bottom - paperRect.top) * scale;
+
+          if (targetY > blockTopPx && targetY < blockBottomPx) {
+            if (blockTopPx > currentY + 40) splitY = blockTopPx;
+            break;
+          }
+        }
+
+        pageSlices.push({ startY: currentY, endY: splitY });
+        currentY = splitY;
+      }
+
+      const watermarkText = document.getElementById('watermarkText').value.trim();
+
+      for (let i = 0; i < pageSlices.length; i++) {
+        if (i > 0) pdf.addPage();
+
+        const slice = pageSlices[i];
+        const sliceHeightPx = slice.endY - slice.startY;
+        const sliceHeightMm = sliceHeightPx * pxToMm;
+
+        const tempCanvas = document.createElement('canvas');
+        tempCanvas.width = canvas.width;
+        tempCanvas.height = sliceHeightPx;
+        const ctx = tempCanvas.getContext('2d');
+        ctx.fillStyle = "#ffffff";
+        ctx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
+
+        ctx.drawImage(
+          canvas,
+          0, slice.startY, canvas.width, sliceHeightPx,
+          0, 0, canvas.width, sliceHeightPx
+        );
+
+        const imgData = tempCanvas.toDataURL('image/jpeg', 0.98);
+        pdf.addImage(imgData, 'JPEG', marginLeftMm, marginTopMm, contentWidthMm, sliceHeightMm);
+
+        if (watermarkText) {
+          pdf.saveGraphicsState();
+          pdf.setGState(new pdf.GState({ opacity: 0.10 }));
+          pdf.setFontSize(36);
+          pdf.setTextColor(120, 120, 120);
+          pdf.text(watermarkText, 105, 150, { align: 'center', angle: 45 });
+          pdf.restoreGraphicsState();
+        }
+
+        pdf.setFontSize(9);
+        pdf.setTextColor(100, 100, 100);
+        pdf.text(`Page ${i + 1} of ${pageSlices.length}`, 105, 289, { align: 'center' });
+      }
+
+      pdf.save('Question_Paper.pdf');
+    } catch (err) {
+      alert('PDF error: ' + err.message);
+    } finally {
+      previewCol.style.display = origDisplay;
+      previewCol.style.position = origPos;
+      previewCol.style.left = origLeft;
+      previewCol.style.top = origTop;
+      previewCol.style.zIndex = origZIndex;
+
+      actions.forEach(a => a.style.display = 'inline-flex');
+      btn.innerText = '📥 Export PDF';
+      btn.disabled = false;
+      applyScale(oldScale);
+    }
+  }
+
+  window.addEventListener('DOMContentLoaded', loadDraft);
+</script>
+</body>
+</html>
