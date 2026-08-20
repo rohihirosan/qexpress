@@ -3,10 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Question Express - Question Paper Generator App</title>
+<title>Question Express - Question Paper Generator App ⚡</title>
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#1a73e8">
+<!-- Cropper.js CSS and JS -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
 <script>
 window.MathJax = {
   tex: { inlineMath: [['$', '$'], ['\\(', '\\)']] },
@@ -179,7 +182,7 @@ input, select, textarea {
   background: #fff;
 }
 
-.row { display: flex; gap: 8px; }
+.row { display: flex; gap: 8px; align-items: center; }
 
 /* COMPACT LIVE PREVIEW SECTION */
 .compact-preview-wrapper {
@@ -219,21 +222,20 @@ input, select, textarea {
 }
 
 .sec-header { text-align: center; font-weight: bold; text-decoration: underline; margin: 16px 0 10px 0; font-size: 15px; }
-.q-block { margin-bottom: 14px; font-size: 15px; line-height: 1.4; }
+.q-block { margin-bottom: 16px; font-size: 15px; line-height: 1.4; }
+.q-heading-title { font-weight: bold; font-style: italic; color: #1a73e8; margin-top: 10px; margin-bottom: 4px; font-size: 14px; }
 .q-row { display: flex; justify-content: space-between; gap: 8px; }
 .q-text { 
   display: grid;
-  grid-template-columns: 45px 1fr; /* नंबर के लिए 45px फिक्स, बाकी जगह टेक्स्ट के लिए */
+  grid-template-columns: 45px 1fr;
   align-items: start;
   word-wrap: break-word; 
   overflow-wrap: break-word;
 }
 
-.q-num {
-  font-weight: bold;
-}
+.q-num { font-weight: bold; }
 
-.options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; padding-left: 28px; margin-top: 6px; }
+.options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; padding-left: 45px; margin-top: 6px; }
 .q-actions { display: inline-flex; gap: 4px; margin-left: 8px; font-family: sans-serif; }
 .btn-act { background: #f1f3f4; border: 1px solid #ccc; border-radius: 4px; padding: 2px 6px; font-size: 11px; cursor: pointer; }
 .btn-del:hover { background: #fce8e6; color: #c5221f; }
@@ -286,6 +288,97 @@ button.main-btn {
   cursor: pointer; display: flex; align-items: center; justify-content: center;
 }
 
+/* DYNAMIC EDITOR UI STYLES */
+.dynamic-box {
+  background: #f8f9fa;
+  border: 1px dashed #1a73e8;
+  border-radius: 8px;
+  padding: 10px;
+  margin-top: 8px;
+}
+.opt-item, .pair-item, .subq-item {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  margin-bottom: 6px;
+}
+.btn-sm-del {
+  background: #fce8e6;
+  color: #c5221f;
+  border: 1px solid #fad2cf;
+  border-radius: 6px;
+  padding: 6px 10px;
+  cursor: pointer;
+  font-size: 12px;
+}
+.btn-sm-add {
+  background: #e8f0fe;
+  color: var(--primary);
+  border: 1px solid #baddfd;
+  border-radius: 6px;
+  padding: 6px 12px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: bold;
+  margin-top: 4px;
+}
+
+/* PREVIEW IMAGE STYLES */
+.q-attached-img {
+  max-width: 250px;
+  max-height: 200px;
+  object-fit: contain;
+  margin: 6px 0 6px 45px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  display: block;
+}
+
+/* MATCH TABLE IN PREVIEW */
+.match-table-preview {
+  width: calc(100% - 45px);
+  margin-left: 45px;
+  border-collapse: collapse;
+  margin-top: 6px;
+  font-size: 14px;
+}
+.match-table-preview td, .match-table-preview th {
+  border: 1px solid #ccc;
+  padding: 5px 8px;
+  text-align: left;
+}
+
+/* SUBQUESTIONS PREVIEW */
+.subq-preview-list {
+  padding-left: 45px;
+  margin-top: 6px;
+}
+.subq-preview-item {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 4px;
+}
+
+/* IMAGE CROPPER MODAL STYLES */
+.crop-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  max-width: 100%;
+}
+.canvas-holder {
+  max-width: 100%;
+  max-height: 300px;
+  overflow: auto;
+  border: 1px solid #dadce0;
+  background: #222;
+  border-radius: 8px;
+  display: flex;
+  justify-content: center;
+}
+canvas { max-width: 100%; height: auto; }
+
 /* TOAST */
 .toast {
   position: fixed; bottom: 20px; right: 20px; background: #1e8e3e;
@@ -325,7 +418,7 @@ button.main-btn {
 
 <div class="app-header">
   <div onclick="switchView('landingView')" style="cursor:pointer;">
-    <h1>Question Express</h1>
+    <h1>Question Express ⚡ </h1>
     <span style="font-size: 11px; opacity: 0.9;">Simple & Fast Question Paper Generator</span>
   </div>
   <div class="header-btns">
@@ -338,9 +431,8 @@ button.main-btn {
 <div id="landingView" class="view-container active-view">
   <div class="landing-hero">
     <div class="hero-card">
-      <div class="hero-title">Question Express</div>
+      <div class="hero-title">Question Express ⚡</div>
       <div class="hero-subtitle">आसानी से अपने स्कूल एवं कोचिंग के लिए बोर्ड पैटर्न प्रश्न पत्र तैयार करें।</div>
-      
       <button class="main-btn btn-primary" style="max-width: 300px; margin: 0 auto; font-size:16px;" onclick="switchView('appLayoutView')">
         ➕ Create New Paper
       </button>
@@ -349,7 +441,7 @@ button.main-btn {
         <div class="mode-card" onclick="switchView('appLayoutView')">
           <div class="mode-icon">📝</div>
           <div class="mode-title">Manual Builder Mode</div>
-          <div class="mode-desc">खुद से प्रश्न, विकल्प और अंक जोड़ें। Math Toolbar सपोर्ट के साथ गणितीय सूत्र लिखें और PDF डाउनलोड करें।</div>
+          <div class="mode-desc">खुद से प्रश्न, विकल्प, मैचिंग पेयर्स, सब-क्वेश्चन्स और इमेज क्रॉपिंग के साथ प्रश्न पत्र बनाकर PDF डाउनलोड करें।</div>
         </div>
 
         <div class="mode-card" style="opacity: 0.8;" onclick="alert('Auto AI Mode जल्द ही आ रहा है!');">
@@ -404,14 +496,12 @@ button.main-btn {
 
     <!-- STEP 2: LIVE PREVIEW + ADD QUESTION CONTAINER -->
     <div id="wizardStep2" style="display: none;">
-      
       <!-- FIXED-HEIGHT LIVE PREVIEW BOX -->
       <div class="card" style="padding: 10px;">
         <div class="section-label" style="margin-bottom: 6px;">
           <span>📄 Live Paper Preview</span>
           <button type="button" class="hdr-btn" style="background:#e8f0fe; color:var(--primary); border:1px solid #baddfd; padding:2px 6px; font-size:11px;" onclick="goToStep1()">⚙️ Edit Basic Details</button>
         </div>
-        
         <div class="compact-preview-wrapper" id="paperWrapper">
           <div class="zoom-controls">
             <button class="zoom-btn" onclick="adjustZoom(0.1)" title="Zoom In">🔍+</button>
@@ -423,7 +513,7 @@ button.main-btn {
             <div class="paper-header">
               <h2 id="pSchool">Write Your School/Institution Name Here</h2>
               <h4 id="pExam">Examination Type</h4>
-              <h4 id="pSub">Class  | Subject </h4>
+              <h4 id="pSub">Class | Subject </h4>
             </div>
 
             <div class="paper-info">
@@ -442,7 +532,7 @@ button.main-btn {
             </div>
 
             <div id="secLONG" style="display:none;">
-              <div class="sec-header">SECTION - C (Long Answer Questions)</div>
+              <div class="sec-header">SECTION - C (Long Answer / Analytical Questions)</div>
               <div id="listLONG"></div>
             </div>
           </div>
@@ -457,14 +547,33 @@ button.main-btn {
         </div>
 
         <label>Question Type</label>
-        <select id="qType" onchange="toggleMCQ()">
-          <option value="MCQ">Section A: MCQ (1 Mark)</option>
-          <option value="SHORT">Section B: Short (2 Marks)</option>
-          <option value="LONG">Section C: Long (5 Marks)</option>
-        </select>
+        <select id="qType" onchange="handleQTypeChange()">
+          <optgroup label="Objective & MCQ Types">
+            <option value="MCQ_SINGLE">Single-Option MCQ (Pick 1 Correct)</option>
+            <option value="MCQ_MULTI">Multiple-Correct MCQ (JEE Pattern)</option>
+            <option value="TRUE_FALSE">True or False / Yes or No</option>
+            <option value="FILL_BLANK">Fill in the Blanks</option>
+            <option value="MATCH">Matching Pairs (Column A & Column B)</option>
+            <option value="ASSERTION">Assertion and Reason</option>
+          </optgroup>
+          <optgroup label="Subjective & Descriptive Types">
+            <option value="VSA">Very Short Answer (VSA - 1 Mark)</option>
+            <option value="SHORT">Short Answer (SA - 2/3 Marks)</option>
+            <option value="LONG">Long Answer / Essay Type (5 Marks)</option>
+          </optgroup>
+          <optgroup label="Analytical, Numerical & Passage Types">
+            <option value="NUMERICAL">Numerical / Integer Type</option>
+            <option value="PASSAGE">Case Study / Passage-Based (with Sub-Questions)</option>
+            <option value="DIAGRAM">Diagram / Graph / Circuit / Map-Based</option>
+          </optgroup>
+        </select
+
+        <!-- OPTIONAL HEADING / INSTRUCTIONS -->
+        <label>Heading / Instruction (Optional)</label>
+        <input type="text" id="qHeading" placeholder="e.g. Read the passage carefully / Match Column A with B">
 
         <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px; margin-bottom: 4px;">
-          <label style="margin:0;">Question Text</label>
+          <label style="margin:0;">Question / Main Text</label>
           <button type="button" class="hdr-btn" style="background:#e8f0fe; color:var(--primary); border:1px solid #baddfd; padding:3px 8px; font-size:11px;" onclick="toggleMathToolbar()">📐 Math Symbols $\Sigma$</button>
         </div>
 
@@ -490,19 +599,44 @@ button.main-btn {
 
         <textarea id="qText" rows="3" placeholder="Type/Paste Your Question Here....."></textarea>
 
-        <div id="mcqBox">
-          <div class="row" style="margin-top:6px;">
-            <input type="text" id="optA" placeholder="Option A">
-            <input type="text" id="optB" placeholder="Option B">
+        <!-- IMAGE ATTACHMENT & SMART CROP SECTION -->
+        <div style="margin-top:10px;">
+          <label style="margin:0 0 4px 0;">Attach Image / Diagram (Optional):</label>
+          <div class="row">
+            <input type="file" id="imageInput" accept="image/*" onchange="handleImageUpload(event)" style="flex:1;">
+            <button type="button" class="hdr-btn" id="cropBtn" style="display:none; background:#e8f0fe; color:var(--primary); border:1px solid #baddfd;" onclick="openCropModal()">✂️ Smart Crop</button>
+            <button type="button" class="hdr-btn" id="delImgBtn" style="display:none; background:#fce8e6; color:#c5221f; border:1px solid #fad2cf;" onclick="removeDraftImage()">🗑️ Remove Image</button>
           </div>
-          <div class="row" style="margin-top:6px;">
-            <input type="text" id="optC" placeholder="Option C">
-            <input type="text" id="optD" placeholder="Option D">
+          <div id="imagePreviewBox" style="display:none; margin-top:8px;">
+            <img id="draftImgPreview" style="max-height: 120px; border-radius: 6px; border: 1px solid #ccc;">
           </div>
         </div>
 
-        <label>Marks</label>
-        <input type="number" id="qMarks" value="1">
+        <!-- DYNAMIC MCQ OPTIONS BOX -->
+        <div id="mcqBox" class="dynamic-box" style="display:block;">
+          <div style="font-weight:bold; font-size:12px; margin-bottom:6px; color:var(--primary);">Dynamic MCQ Options</div>
+          <div id="mcqOptionsList"></div>
+          <button type="button" class="btn-sm-add" onclick="addMCQOption()">+ Add Option</button>
+        </div>
+
+        <!-- DYNAMIC MATCH THE FOLLOWING BOX -->
+        <div id="matchBox" class="dynamic-box" style="display:none;">
+          <div style="font-weight:bold; font-size:12px; margin-bottom:6px; color:var(--primary);">Matching Pairs (Column A & Column B)</div>
+          <div id="matchPairsList"></div>
+          <button type="button" class="btn-sm-add" onclick="addMatchPair()">+ Add Pair</button>
+        </div>
+
+        <!-- DYNAMIC SUB-QUESTIONS BOX -->
+        <div id="subQBox" class="dynamic-box" style="display:none;">
+          <div style="font-weight:bold; font-size:12px; margin-bottom:6px; color:var(--primary);">Sub-Questions (i, ii, iii...)</div>
+          <div id="subQList"></div>
+          <button type="button" class="btn-sm-add" onclick="addSubQuestion()">+ Add Sub-Question</button>
+        </div>
+
+        <div style="margin-top:10px;">
+          <label>Marks</label>
+          <input type="number" id="qMarks" value="1">
+        </div>
 
         <div class="btn-group">
           <button type="button" class="main-btn btn-primary" onclick="addQuestion()">+ Add Question</button>
@@ -525,14 +659,33 @@ button.main-btn {
 
 <!-- FOOTER -->
 <footer class="app-footer">
-  <p style="margin: 0; font-size: 12px; opacity: 0.8;"> 🖊️ Created By Teacher For Teachers.</p>
-  <p style="margin: 0; font-size: 12px; opacity: 0.8;">©️ 2026</p>
+    <p style="margin: 0; font-size: 12px; opacity: 0.8;"> 🖊️ Created By Teacher For Teachers. 💙</p>
+  <p style="margin: 0; font-size: 12px; opacity: 0.8;">©️ Protected 2026 Question Express ⚡</p>
 </footer>
 
 <!-- TOAST -->
 <div id="toast" class="toast">
   <span id="toastMsg">Question Added!</span>
 </div>
+
+<!-- Crop Modal -->
+
+<div id="cropModal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.8); z-index:99999; justify-content:center; align-items:center;">
+  <div class="modal-content" style="background:#fff; padding:20px; border-radius:12px; max-width:500px; width:90%; margin: 5% auto;">
+    <h3 style="margin-top:0;">✂️ Smart Image Cropper</h3>
+    
+    <div style="max-height: 350px; overflow:hidden; margin-bottom: 15px; background:#f0f0f0;">
+      <img id="cropTargetImage" src="" style="max-width: 100%; display: block;">
+    </div>
+
+    <div style="text-align:right;">
+      <button type="button" onclick="applyCrop()" style="background:#0066cc; color:white; padding:10px 16px; border:none; border-radius:6px; font-weight:bold; cursor:pointer;">✂️ Apply Crop & Save</button>
+      <button type="button" onclick="closeCropModal()" style="background:#666; color:white; padding:10px 16px; border:none; border-radius:6px; font-weight:bold; cursor:pointer; margin-left:8px;">Cancel</button>
+    </div>
+  </div>
+</div>
+
+
 
 <!-- MATH COMMANDS MODAL -->
 <div id="mathModal" class="modal-overlay">
@@ -590,13 +743,19 @@ button.main-btn {
 
 <script>
 let questionsData = [];
+let currentDraftImage = null; // Base64 image
+let rawLoadedImageObj = null;
+
+// Dynamic arrays for crafting question
+let mcqOptions = ["Option A", "Option B", "Option C", "Option D"];
+let matchPairs = [{colA: "Item 1", colB: "Match A"}, {colA: "Item 2", colB: "Match B"}];
+let subQuestions = [{text: "Sub question 1", marks: "1"}];
 
 function switchView(viewId) {
   document.querySelectorAll('.view-container').forEach(view => {
     view.classList.remove('active-view');
   });
   document.getElementById(viewId).classList.add('active-view');
-  
   const homeBtn = document.getElementById('homeNavBtn');
   if (viewId === 'appLayoutView') {
     homeBtn.style.display = 'inline-block';
@@ -655,11 +814,215 @@ function updatePaper() {
   saveDraft();
 }
 
-function toggleMCQ() {
-  const type = document.getElementById('qType').value;
-  document.getElementById('mcqBox').style.display = (type === 'MCQ') ? 'block' : 'none';
-  document.getElementById('qMarks').value = (type === 'MCQ') ? 1 : (type === 'SHORT' ? 2 : 5);
+/* QUESTION TYPES & UI DYNAMIC CONTROL */
+function handleQTypeChange() {
+    const type = document.getElementById('qType').value;
+    const mcqBox = document.getElementById('mcqBox');
+    const matchBox = document.getElementById('matchBox');
+    const subQBox = document.getElementById('subQBox');
+    const qMarks = document.getElementById('qMarks');
+
+    mcqBox.style.display = 'none';
+    matchBox.style.display = 'none';
+    subQBox.style.display = 'none';
+
+    if (type === 'MCQ_SINGLE' || type === 'MCQ_MULTI' || type === 'ASSERTION') {
+        mcqBox.style.display = 'block';
+        
+        // 🔑 FIX: Agar options 0 hain YA fir True/False waale hain, toh default 4 options reset karo
+        if (mcqOptions.length === 0 || mcqOptions[0] === "True") {
+            mcqOptions = ["Option A", "Option B", "Option C", "Option D"];
+        }
+        
+        renderMCQInputs();
+        qMarks.value = 1;
+    } else if (type === 'TRUE_FALSE') {
+        mcqBox.style.display = 'block';
+        mcqOptions = ["True", "False"];
+        renderMCQInputs();
+        qMarks.value = 1;
+    } else if (type === 'MATCH') {
+        matchBox.style.display = 'block';
+        if (matchPairs.length === 0) matchPairs = [{colA: "1.", colB: "A."}];
+        renderMatchInputs();
+        qMarks.value = 4;
+    } else if (type === 'PASSAGE' || type === 'DIAGRAM') {
+        subQBox.style.display = 'block';
+        if (subQuestions.length === 0) subQuestions = [{text: "", marks: "1"}];
+        renderSubQInputs();
+        qMarks.value = 5;
+    } else if (type === 'FILL_BLANK' || type === 'VSA') {
+        qMarks.value = 1;
+    } else if (type === 'SHORT' || type === 'NUMERICAL') {
+        qMarks.value = 2;
+    } else if (type === 'LONG') {
+        qMarks.value = 5;
+    }
 }
+
+
+/* DYNAMIC MCQ OPTIONS HANDLERS */
+function renderMCQInputs() {
+  const container = document.getElementById('mcqOptionsList');
+  container.innerHTML = '';
+  mcqOptions.forEach((opt, idx) => {
+    const div = document.createElement('div');
+    div.className = 'opt-item';
+    div.innerHTML = `
+      <span style="font-size:12px; font-weight:bold; width:25px;">(${String.fromCharCode(65 + idx)})</span>
+      <input type="text" value="${opt}" oninput="mcqOptions[${idx}] = this.value">
+      <button type="button" class="btn-sm-del" onclick="removeMCQOption(${idx})">🗑️</button>
+    `;
+    container.appendChild(div);
+  });
+}
+
+function addMCQOption() {
+  mcqOptions.push(`Option ${String.fromCharCode(65 + mcqOptions.length)}`);
+  renderMCQInputs();
+}
+
+function removeMCQOption(idx) {
+  mcqOptions.splice(idx, 1);
+  renderMCQInputs();
+}
+
+/* DYNAMIC MATCH THE FOLLOWING HANDLERS */
+function renderMatchInputs() {
+  const container = document.getElementById('matchPairsList');
+  container.innerHTML = '';
+  matchPairs.forEach((pair, idx) => {
+    const div = document.createElement('div');
+    div.className = 'pair-item';
+    div.innerHTML = `
+      <input type="text" placeholder="Column A item" value="${pair.colA}" oninput="matchPairs[${idx}].colA = this.value" style="flex:1;">
+      <span style="font-weight:bold;">↔</span>
+      <input type="text" placeholder="Column B item" value="${pair.colB}" oninput="matchPairs[${idx}].colB = this.value" style="flex:1;">
+      <button type="button" class="btn-sm-del" onclick="removeMatchPair(${idx})">🗑️</button>
+    `;
+    container.appendChild(div);
+  });
+}
+
+function addMatchPair() {
+  matchPairs.push({colA: "", colB: ""});
+  renderMatchInputs();
+}
+
+function removeMatchPair(idx) {
+  matchPairs.splice(idx, 1);
+  renderMatchInputs();
+}
+
+/* DYNAMIC SUB-QUESTIONS HANDLERS */
+function renderSubQInputs() {
+  const container = document.getElementById('subQList');
+  container.innerHTML = '';
+  subQuestions.forEach((sq, idx) => {
+    const div = document.createElement('div');
+    div.className = 'subq-item';
+    div.innerHTML = `
+      <span style="font-size:12px; font-weight:bold; width:20px;">(${idx + 1})</span>
+      <input type="text" placeholder="Sub-question text" value="${sq.text}" oninput="subQuestions[${idx}].text = this.value" style="flex:3;">
+      <input type="number" placeholder="Marks" value="${sq.marks}" oninput="subQuestions[${idx}].marks = this.value" style="flex:1;">
+      <button type="button" class="btn-sm-del" onclick="removeSubQuestion(${idx})">🗑️</button>
+    `;
+    container.appendChild(div);
+  });
+}
+
+function addSubQuestion() {
+  subQuestions.push({text: "", marks: "1"});
+  renderSubQInputs();
+}
+
+function removeSubQuestion(idx) {
+  subQuestions.splice(idx, 1);
+  renderSubQInputs();
+}
+
+/* IMAGE UPLOAD & SMART CROP (Cropper.js Drag-to-Crop) */
+let cropper = null;
+
+// 1. Image select hote hi preview dikhayen aur Crop Modal open karein
+function handleImageUpload(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        currentDraftImage = e.target.result;
+
+        // Modal wali image me source daalein
+        const cropTarget = document.getElementById('cropTargetImage');
+        if (cropTarget) cropTarget.src = currentDraftImage;
+
+        // UI buttons show karein
+        document.getElementById('draftImgPreview').src = currentDraftImage;
+        document.getElementById('imagePreviewBox').style.display = 'block';
+        document.getElementById('cropBtn').style.display = 'inline-block';
+        document.getElementById('delImgBtn').style.display = 'inline-block';
+
+        // Direct crop modal open karein
+        openCropModal();
+    };
+    reader.readAsDataURL(file);
+}
+
+// 2. Modal open karke Touch/Mouse Cropper load karein
+function openCropModal() {
+    const modal = document.getElementById('cropModal');
+    const image = document.getElementById('cropTargetImage');
+
+    modal.style.display = 'block';
+
+    // Image render hone ke baad Cropper start hoga
+    setTimeout(() => {
+        if (cropper) {
+            cropper.destroy();
+        }
+
+        cropper = new Cropper(image, {
+            viewMode: 1,
+            autoCropArea: 0.85,
+            responsive: true,
+            background: true
+        });
+    }, 100);
+}
+
+
+// 3. Crop Apply karke Save karein
+function applyCrop() {
+    if (!cropper) return;
+
+    const canvas = cropper.getCroppedCanvas();
+    if (canvas) {
+        currentDraftImage = canvas.toDataURL('image/png');
+        document.getElementById('draftImgPreview').src = currentDraftImage;
+    }
+
+    closeCropModal();
+}
+
+// 4. Modal Close karein
+function closeCropModal() {
+    document.getElementById('cropModal').style.display = 'none';
+    if (cropper) {
+        cropper.destroy();
+        cropper = null;
+    }
+}
+
+// 5. Image Remove/Delete Feature
+function removeDraftImage() {
+    currentDraftImage = null;
+    document.getElementById('imageInput').value = '';
+    document.getElementById('imagePreviewBox').style.display = 'none';
+    document.getElementById('cropBtn').style.display = 'none';
+    document.getElementById('delImgBtn').style.display = 'none';
+}
+
 
 function insertMath(symbol) {
   const textarea = document.getElementById('qText');
@@ -679,35 +1042,34 @@ function insertMathAndClose(symbol) {
 
 function addQuestion() {
   const type = document.getElementById('qType').value;
+  const heading = document.getElementById('qHeading').value.trim();
   const text = document.getElementById('qText').value.trim();
   const marks = document.getElementById('qMarks').value;
 
-  if (!text) return alert("कृपया प्रश्न लिखें!");
+  if (!text && type !== 'MATCH') return alert("कृपया प्रश्न का विवरण दर्ज करें!");
 
   const newQ = {
     id: Date.now().toString(),
     type: type,
+    heading: heading,
     text: text,
     marks: marks,
-    optA: document.getElementById('optA').value || '',
-    optB: document.getElementById('optB').value || '',
-    optC: document.getElementById('optC').value || '',
-    optD: document.getElementById('optD').value || ''
+    image: currentDraftImage,
+    options: (type.startsWith('MCQ') || type === 'TRUE_FALSE' || type === 'ASSERTION') ? [...mcqOptions] : [],
+    matchPairs: (type === 'MATCH') ? JSON.parse(JSON.stringify(matchPairs)) : [],
+    subQuestions: (type === 'PASSAGE' || type === 'DIAGRAM') ? JSON.parse(JSON.stringify(subQuestions)) : []
   };
 
   questionsData.push(newQ);
   saveDraft();
   renderAllQuestionsFromData();
 
+  // Reset Input Form
+  document.getElementById('qHeading').value = '';
   document.getElementById('qText').value = '';
-  document.getElementById('optA').value = '';
-  document.getElementById('optB').value = '';
-  document.getElementById('optC').value = '';
-  document.getElementById('optD').value = '';
-
+  removeDraftImage();
   showToast(`✅ प्रश्न सफलतापूर्वक जुड़ गया!`);
-  
-  // Auto scroll paper container to bottom to view newly added question
+
   const wrapper = document.getElementById('paperWrapper');
   wrapper.scrollTop = wrapper.scrollHeight;
 }
@@ -729,6 +1091,7 @@ function saveDraft() {
 
 function loadDraft() {
   const saved = localStorage.getItem('paper_draft_data');
+  handleQTypeChange();
   if (!saved) {
     autoCheckSubjectForMath();
     return;
@@ -745,7 +1108,14 @@ function loadDraft() {
       updatePaper();
     }
     if (data.questions && Array.isArray(data.questions)) {
-      questionsData = data.questions;
+      // Backward compatibility converter
+      questionsData = data.questions.map(q => {
+        if (q.type === 'MCQ' && !q.options) {
+          q.type = 'MCQ_SINGLE';
+          q.options = [q.optA, q.optB, q.optC, q.optD].filter(Boolean);
+        }
+        return q;
+      });
       renderAllQuestionsFromData();
       if (questionsData.length > 0) {
         goToStep2();
@@ -774,15 +1144,29 @@ function editQuestion(id) {
   const q = questionsData.find(item => item.id === id);
   if (!q) return;
   document.getElementById('qType').value = q.type;
-  toggleMCQ();
-  document.getElementById('qText').value = q.text;
-  document.getElementById('qMarks').value = q.marks;
+  handleQTypeChange();
+  document.getElementById('qHeading').value = q.heading || '';
+  document.getElementById('qText').value = q.text || '';
+  document.getElementById('qMarks').value = q.marks || '1';
 
-  if (q.type === 'MCQ') {
-    document.getElementById('optA').value = q.optA;
-    document.getElementById('optB').value = q.optB;
-    document.getElementById('optC').value = q.optC;
-    document.getElementById('optD').value = q.optD;
+  if (q.image) {
+    currentDraftImage = q.image;
+    document.getElementById('draftImgPreview').src = currentDraftImage;
+    document.getElementById('imagePreviewBox').style.display = 'block';
+    document.getElementById('delImgBtn').style.display = 'inline-block';
+  }
+
+  if (q.options && q.options.length) {
+    mcqOptions = [...q.options];
+    renderMCQInputs();
+  }
+  if (q.matchPairs && q.matchPairs.length) {
+    matchPairs = JSON.parse(JSON.stringify(q.matchPairs));
+    renderMatchInputs();
+  }
+  if (q.subQuestions && q.subQuestions.length) {
+    subQuestions = JSON.parse(JSON.stringify(q.subQuestions));
+    renderSubQInputs();
   }
 
   deleteSingleQuestion(id);
@@ -790,57 +1174,102 @@ function editQuestion(id) {
 }
 
 async function renderAllQuestionsFromData() {
-  const mcqCount = questionsData.filter(q => q.type === 'MCQ').length;
-  const shortCount = questionsData.filter(q => q.type === 'SHORT').length;
-  const longCount = questionsData.filter(q => q.type === 'LONG').length;
-  document.getElementById('qCounterBadge').innerText = `Total: ${questionsData.length} Qs (A:${mcqCount}, B:${shortCount}, C:${longCount})`;
+  const objectiveTypes = ['MCQ_SINGLE', 'MCQ_MULTI', 'TRUE_FALSE', 'FILL_BLANK', 'MATCH', 'ASSERTION'];
+  const shortTypes = ['VSA', 'SHORT'];
+  const longTypes = ['LONG', 'NUMERICAL', 'PASSAGE', 'DIAGRAM'];
+
+  const objCount = questionsData.filter(q => objectiveTypes.includes(q.type)).length;
+  const shortCount = questionsData.filter(q => shortTypes.includes(q.type)).length;
+  const longCount = questionsData.filter(q => longTypes.includes(q.type)).length;
+
+  document.getElementById('qCounterBadge').innerText = `Total: ${questionsData.length} Qs (Sec A:${objCount}, Sec B:${shortCount}, Sec C:${longCount})`;
 
   document.getElementById('listMCQ').innerHTML = '';
   document.getElementById('listSHORT').innerHTML = '';
   document.getElementById('listLONG').innerHTML = '';
 
-  ['MCQ', 'SHORT', 'LONG'].forEach(type => {
-    const filtered = questionsData.filter(q => q.type === type);
-    const sec = document.getElementById('sec' + type);
+  const groups = [
+    { types: objectiveTypes, secId: 'secMCQ', listId: 'listMCQ' },
+    { types: shortTypes, secId: 'secSHORT', listId: 'listSHORT' },
+    { types: longTypes, secId: 'secLONG', listId: 'listLONG' }
+  ];
+
+  let globalCounter = 1;
+
+  groups.forEach(group => {
+    const filtered = questionsData.filter(q => group.types.includes(q.type));
+    const sec = document.getElementById(group.secId);
 
     if (filtered.length === 0) {
       sec.style.display = 'none';
     } else {
       sec.style.display = 'block';
-      const container = document.getElementById('list' + type);
+      const container = document.getElementById(group.listId);
 
-      filtered.forEach((q, idx) => {
+      filtered.forEach((q) => {
         const qDiv = document.createElement('div');
         qDiv.className = 'q-block';
 
-       let html = `
-<div class="q-row">
-<div class="q-text">
-<span class="q-num">Q${idx + 1}.</span>
-<span class="q-content">${q.text}</span>
-</div>
-<div style="white-space:nowrap; margin-left: 8px;">
-[${q.marks}]
-<span class="q-actions">
-<button type="button" class="btn-act" onclick="editQuestion('${q.id}')">✏️</button>
-<button type="button" class="btn-act btn-del" onclick="deleteSingleQuestion('${q.id}')">🗑️</button>
-</span>
-</div>
-</div>`;
+        let html = '';
+        if (q.heading) {
+          html += `<div class="q-heading-title">${q.heading}</div>`;
+        }
 
+        html += `
+        <div class="q-row">
+          <div class="q-text">
+            <span class="q-num">Q${globalCounter}.</span>
+            <span class="q-content">${q.text}</span>
+          </div>
+          <div style="white-space:nowrap; margin-left: 8px;">
+            [${q.marks}]
+            <span class="q-actions">
+              <button type="button" class="btn-act" onclick="editQuestion('${q.id}')">✏️</button>
+              <button type="button" class="btn-act btn-del" onclick="deleteSingleQuestion('${q.id}')">🗑️</button>
+            </span>
+          </div>
+        </div>`;
 
-        if (q.type === 'MCQ') {
-          html += `
-          <div class="options-grid">
-            <span>(A) ${q.optA}</span>
-            <span>(B) ${q.optB}</span>
-            <span>(C) ${q.optC}</span>
-            <span>(D) ${q.optD}</span>
-          </div>`;
+        // Render Attached Image
+        if (q.image) {
+          html += `<img src="${q.image}" class="q-attached-img">`;
+        }
+
+        // Render MCQ Options
+        if (q.options && q.options.length > 0) {
+          html += `<div class="options-grid">`;
+          q.options.forEach((opt, idx) => {
+            html += `<span>(${String.fromCharCode(65 + idx)}) ${opt}</span>`;
+          });
+          html += `</div>`;
+        }
+
+        // Render Match Pairs Table
+        if (q.matchPairs && q.matchPairs.length > 0) {
+          html += `<table class="match-table-preview">
+            <thead><tr><th>Column A</th><th>Column B</th></tr></thead>
+            <tbody>`;
+          q.matchPairs.forEach((pair, idx) => {
+            html += `<tr><td><b>${idx + 1}.</b> ${pair.colA}</td><td><b>(${String.fromCharCode(97 + idx)})</b> ${pair.colB}</td></tr>`;
+          });
+          html += `</tbody></table>`;
+        }
+
+        // Render Sub-questions
+        if (q.subQuestions && q.subQuestions.length > 0) {
+          html += `<div class="subq-preview-list">`;
+          q.subQuestions.forEach((sq, idx) => {
+            html += `<div class="subq-preview-item">
+              <span><b>(${String.fromCharCode(97 + idx)})</b> ${sq.text}</span>
+              ${sq.marks ? `<span style="font-size:12px; font-style:italic;">[${sq.marks} Mark]</span>` : ''}
+            </div>`;
+          });
+          html += `</div>`;
         }
 
         qDiv.innerHTML = html;
         container.appendChild(qDiv);
+        globalCounter++;
       });
     }
   });
@@ -876,7 +1305,7 @@ function importJSON(event) {
   reader.readAsText(file);
 }
 
-let currentScale = 0.55; // Default compact zoom level to fit inside box
+let currentScale = 0.55;
 let initialDist = 0;
 let startScale = 0.55;
 const wrapper = document.getElementById('paperWrapper');
@@ -889,7 +1318,6 @@ function applyScale(scale) {
 function adjustZoom(delta) { applyScale(currentScale + delta); }
 function resetZoom() { applyScale(0.55); }
 
-// Initialize compact zoom
 applyScale(0.55);
 
 wrapper.addEventListener('touchstart', (e) => {
