@@ -2,7 +2,7 @@
   "name": "Question Express - Paper Generator",
   "short_name": "Question Express",
   "start_url": "./index.html",
-  "display": "standalone",
+  "display": "browser",
   "background_color": "#eef2f5",
   "theme_color": "#1a73e8",
   "icons": [
