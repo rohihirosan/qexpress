@@ -8,14 +8,15 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#1a73e8">
 <link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#1a73e8">
-<!-- Browser Tab Icon -->
+
+<!-- Browser Tab & Mobile Icons -->
 <link rel="icon" type="image/svg+xml" href="icon.svg">
-<!-- Mobile Home Screen Icon -->
 <link rel="apple-touch-icon" href="icon-192.png">
+
 <!-- Cropper.js CSS and JS -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+
 <script>
 window.MathJax = {
   tex: { inlineMath: [['$', '$'], ['\\(', '\\)']] },
@@ -25,6 +26,7 @@ window.MathJax = {
 <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
 <style>
 :root {
   --primary: #1a73e8;
@@ -138,7 +140,7 @@ body {
 .mode-title { font-size: 16px; font-weight: 700; color: var(--text); margin-bottom: 6px; }
 .mode-desc { font-size: 12px; color: #5f6368; line-height: 1.4; }
 
-/* MAIN APP SINGLE COLUMN STREAMLINED LAYOUT */
+/* MAIN APP SINGLE COLUMN LAYOUT */
 .app-layout-single {
   max-width: 850px;
   margin: 0 auto;
@@ -365,26 +367,6 @@ button.main-btn {
   margin-bottom: 4px;
 }
 
-/* IMAGE CROPPER MODAL STYLES */
-.crop-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 10px;
-  max-width: 100%;
-}
-.canvas-holder {
-  max-width: 100%;
-  max-height: 300px;
-  overflow: auto;
-  border: 1px solid #dadce0;
-  background: #222;
-  border-radius: 8px;
-  display: flex;
-  justify-content: center;
-}
-canvas { max-width: 100%; height: auto; }
-
 /* TOAST */
 .toast {
   position: fixed; bottom: 20px; right: 20px; background: #1e8e3e;
@@ -420,8 +402,10 @@ canvas { max-width: 100%; height: auto; }
 .video-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0; }
 </style>
 </head>
+
 <body>
-  <!-- SPLASH SCREEN BLOCK -->
+
+<!-- SPLASH SCREEN BLOCK -->
 <div id="splash-screen" style="position:fixed; top:0; left:0; width:100vw; height:100vh; background:#0f172a; color:#ffffff; display:flex; flex-direction:column; justify-content:center; align-items:center; z-index:999999; transition: opacity 0.5s ease, visibility 0.5s ease;">
   <img src="icon.png" alt="QE Logo" style="width:100px; height:100px; margin-bottom:15px;">
   <h2 style="margin:0; font-size:24px; font-weight:900; letter-spacing:1px; color:#ffffff;">QUESTION EXPRESS</h2>
@@ -429,29 +413,23 @@ canvas { max-width: 100%; height: auto; }
 </div>
 
 <script>
-  // Page load hone par splash screen hatane ka script
-  window.addEventListener('load', () => {
-    setTimeout(() => {
-      const splash = document.getElementById('splash-screen');
-      if (splash) {
-        splash.style.opacity = '0';
-        splash.style.visibility = 'hidden';
-      }
-    }, 1500); // 1.5 second tak splash screen dikhegi
-  });
+window.addEventListener('load', () => {
+  setTimeout(() => {
+    const splash = document.getElementById('splash-screen');
+    if (splash) {
+      splash.style.opacity = '0';
+      splash.style.visibility = 'hidden';
+    }
+  }, 1500);
+});
 </script>
 
-
 <div class="app-header">
-
   <div onclick="switchView('landingView')" style="cursor:pointer;">
-   <header style="display: flex; align-items: center; gap: 12px; padding: 12px 20px; background: #0f172a00; color: white;">
-  <img src="icon.png" alt="Question Express" style="width: 40px; height: 40px; border-radius: 8px;">
-  
-</header>
-
+    <header style="display: flex; align-items: center; gap: 12px; padding: 12px 20px; background: #0f172a00; color: white;">
+      <img src="icon.png" alt="Question Express" style="width: 40px; height: 40px; border-radius: 8px;">
+    </header>
   </div>
-  
   <div class="header-btns">
     <button class="hdr-btn" id="homeNavBtn" style="display:none;" onclick="switchView('landingView')">🏠 Home</button>
     <button class="hdr-btn" onclick="openModal('helpModal')">❓ Help & Video</button>
@@ -482,11 +460,17 @@ canvas { max-width: 100%; height: auto; }
           <div class="mode-desc">विषय और अध्याय चुनें, AI खुद आपके लिए बोर्ड पैटर्न पर संतुलित प्रश्न पत्र तैयार करेगा।</div>
         </div>
       </div>
+
+      <div style="text-align: center; margin: 12px 0;">
+        <a href="demo-paper.pdf" target="_blank" style="color: #2563eb; font-size: 13px; font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; background: #eff6ff; padding: 6px 14px; border-radius: 20px; border: 1px solid #bfdbfe;">
+          📄 नमूना प्रश्न पत्र (Demo PDF) ↗
+        </a>
+      </div>
     </div>
   </div>
 </div>
 
-<!-- VIEW 2: MANUAL EDITOR (WIZARD & FIXED PREVIEW) -->
+<!-- VIEW 2: MANUAL EDITOR -->
 <div id="appLayoutView" class="view-container">
   <div class="app-layout-single">
 
@@ -498,27 +482,27 @@ canvas { max-width: 100%; height: auto; }
       </div>
 
       <label>School / Institution</label>
-      <input type="text" id="school" value="Write Your School/Institution Name Here" oninput="updatePaper()">
+      <input type="text" id="school" placeholder="Write Your School/Institution Name Here" oninput="updatePaper()">
 
       <label>Exam Title</label>
-      <input type="text" id="exam" value="Exam Type And Year" oninput="updatePaper()">
+      <input type="text" id="exam" placeholder="Exam Type And Year" oninput="updatePaper()">
 
       <label>Class & Subject</label>
-      <input type="text" id="sub" value="Class | Subject" oninput="updatePaper()">
+      <input type="text" id="sub" placeholder="Class | Subject" oninput="updatePaper()">
 
       <div class="row">
         <div style="flex:1;">
           <label>Time</label>
-          <input type="text" id="time" value=" Hours" oninput="updatePaper()">
+          <input type="text" id="time" placeholder="00:00 Hours" oninput="updatePaper()">
         </div>
         <div style="flex:1;">
           <label>Full Marks</label>
-          <input type="text" id="marks" value=" " oninput="updatePaper()">
+          <input type="text" id="marks" placeholder="100" oninput="updatePaper()">
         </div>
       </div>
 
       <label>Watermark Text</label>
-      <input type="text" id="watermarkText" value="Confidential" oninput="updatePaper()">
+      <input type="text" id="watermarkText" placeholder="Confidential" oninput="updatePaper()">
 
       <div style="margin-top: 16px;">
         <button type="button" class="main-btn btn-primary" onclick="goToStep2()">Next: Add Questions ➔</button>
@@ -527,7 +511,7 @@ canvas { max-width: 100%; height: auto; }
 
     <!-- STEP 2: LIVE PREVIEW + ADD QUESTION CONTAINER -->
     <div id="wizardStep2" style="display: none;">
-      <!-- FIXED-HEIGHT LIVE PREVIEW BOX -->
+      <!-- LIVE PREVIEW BOX -->
       <div class="card" style="padding: 10px;">
         <div class="section-label" style="margin-bottom: 6px;">
           <span>📄 Live Paper Preview</span>
@@ -548,8 +532,8 @@ canvas { max-width: 100%; height: auto; }
             </div>
 
             <div class="paper-info">
-              <span>Time: <span id="pTime">" " Hours</span></span>
-              <span>Full Marks: <span id="pMarks">" "</span></span>
+              <span>Time: <span id="pTime">00:00 Hours</span></span>
+              <span>Full Marks: <span id="pMarks">100</span></span>
             </div>
 
             <div id="secMCQ" style="display:none;">
@@ -581,7 +565,7 @@ canvas { max-width: 100%; height: auto; }
         <select id="qType" onchange="handleQTypeChange()">
           <optgroup label="Objective & MCQ Types">
             <option value="MCQ_SINGLE">Single-Option MCQ (Pick 1 Correct)</option>
-            <option value="MCQ_MULTI">Multiple-Correct MCQ (JEE Pattern)</option>
+            <option value="MCQ_MULTI">Multiple-Correct MCQ</option>
             <option value="TRUE_FALSE">True or False / Yes or No</option>
             <option value="FILL_BLANK">Fill in the Blanks</option>
             <option value="MATCH">Matching Pairs (Column A & Column B)</option>
@@ -597,9 +581,9 @@ canvas { max-width: 100%; height: auto; }
             <option value="PASSAGE">Case Study / Passage-Based (with Sub-Questions)</option>
             <option value="DIAGRAM">Diagram / Graph / Circuit / Map-Based</option>
           </optgroup>
-        </select
+        </select>
 
-        <!-- OPTIONAL HEADING / INSTRUCTIONS -->
+        <!-- OPTIONAL HEADING -->
         <label>Heading / Instruction (Optional)</label>
         <input type="text" id="qHeading" placeholder="e.g. Read the passage carefully / Match Column A with B">
 
@@ -630,12 +614,12 @@ canvas { max-width: 100%; height: auto; }
 
         <textarea id="qText" rows="3" placeholder="Type/Paste Your Question Here....."></textarea>
 
-        <!-- IMAGE ATTACHMENT & SMART CROP SECTION -->
+        <!-- MAIN IMAGE ATTACHMENT & SMART CROP -->
         <div style="margin-top:10px;">
-          <label style="margin:0 0 4px 0;">Attach Image / Diagram (Optional):</label>
+          <label style="margin:0 0 4px 0;">Attach Main Question Image / Diagram (Optional):</label>
           <div class="row">
             <input type="file" id="imageInput" accept="image/*" onchange="handleImageUpload(event)" style="flex:1;">
-            <button type="button" class="hdr-btn" id="cropBtn" style="display:none; background:#e8f0fe; color:var(--primary); border:1px solid #baddfd;" onclick="openCropModal()">✂️ Smart Crop</button>
+            <button type="button" class="hdr-btn" id="cropBtn" style="display:none; background:#e8f0fe; color:var(--primary); border:1px solid #baddfd;" onclick="openCropModal('main')">✂️ Smart Crop</button>
             <button type="button" class="hdr-btn" id="delImgBtn" style="display:none; background:#fce8e6; color:#c5221f; border:1px solid #fad2cf;" onclick="removeDraftImage()">🗑️ Remove Image</button>
           </div>
           <div id="imagePreviewBox" style="display:none; margin-top:8px;">
@@ -643,11 +627,18 @@ canvas { max-width: 100%; height: auto; }
           </div>
         </div>
 
-        <!-- DYNAMIC MCQ OPTIONS BOX -->
+        <!-- DYNAMIC STANDARD MCQ OPTIONS BOX -->
         <div id="mcqBox" class="dynamic-box" style="display:block;">
           <div style="font-weight:bold; font-size:12px; margin-bottom:6px; color:var(--primary);">Dynamic MCQ Options</div>
           <div id="mcqOptionsList"></div>
           <button type="button" class="btn-sm-add" onclick="addMCQOption()">+ Add Option</button>
+        </div>
+
+        <!-- DYNAMIC DIAGRAM OPTIONS BOX (WITH PER-OPTION IMAGE & CROP) -->
+        <div id="diagramBox" class="dynamic-box" style="display:none;">
+          <div style="font-weight:bold; font-size:12px; margin-bottom:6px; color:var(--primary);">Diagram Options & Images</div>
+          <div id="diagramOptionsList"></div>
+          <button type="button" class="btn-sm-add" onclick="addDiagramOption()">+ Add Diagram Option</button>
         </div>
 
         <!-- DYNAMIC MATCH THE FOLLOWING BOX -->
@@ -666,7 +657,7 @@ canvas { max-width: 100%; height: auto; }
 
         <div style="margin-top:10px;">
           <label>Marks</label>
-          <input type="number" id="qMarks" value="1">
+          <input type="number" id="qMarks" placeholder="Marks (e.g. 1)">
         </div>
 
         <div class="btn-group">
@@ -681,8 +672,8 @@ canvas { max-width: 100%; height: auto; }
             </label>
           </div>
         </div>
-      </div>
 
+      </div>
     </div>
 
   </div>
@@ -690,7 +681,7 @@ canvas { max-width: 100%; height: auto; }
 
 <!-- FOOTER -->
 <footer class="app-footer">
-    <p style="margin: 0; font-size: 12px; opacity: 0.8;"> 🖊️ Created By Teacher For Teachers. 💙</p>
+  <p style="margin: 0; font-size: 12px; opacity: 0.8;"> 🖊️ Created By Teacher For Teachers. 💙</p>
   <p style="margin: 0; font-size: 12px; opacity: 0.8;">©️ Protected 2026 Question Express ⚡</p>
 </footer>
 
@@ -699,24 +690,19 @@ canvas { max-width: 100%; height: auto; }
   <span id="toastMsg">Question Added!</span>
 </div>
 
-<!-- Crop Modal -->
-
+<!-- CROP MODAL -->
 <div id="cropModal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.8); z-index:99999; justify-content:center; align-items:center;">
   <div class="modal-content" style="background:#fff; padding:20px; border-radius:12px; max-width:500px; width:90%; margin: 5% auto;">
     <h3 style="margin-top:0;">✂️ Smart Image Cropper</h3>
-    
     <div style="max-height: 350px; overflow:hidden; margin-bottom: 15px; background:#f0f0f0;">
       <img id="cropTargetImage" src="" style="max-width: 100%; display: block;">
     </div>
-
     <div style="text-align:right;">
       <button type="button" onclick="applyCrop()" style="background:#0066cc; color:white; padding:10px 16px; border:none; border-radius:6px; font-weight:bold; cursor:pointer;">✂️ Apply Crop & Save</button>
       <button type="button" onclick="closeCropModal()" style="background:#666; color:white; padding:10px 16px; border:none; border-radius:6px; font-weight:bold; cursor:pointer; margin-left:8px;">Cancel</button>
     </div>
   </div>
 </div>
-
-
 
 <!-- MATH COMMANDS MODAL -->
 <div id="mathModal" class="modal-overlay">
@@ -726,7 +712,8 @@ canvas { max-width: 100%; height: auto; }
       <button class="modal-close" onclick="closeModal('mathModal')">&times;</button>
     </div>
     <div class="modal-body">
-      <p style="margin-top:0; color:#5f6368; font-size:13px;">किसी भी कमांड पर क्लिक करें, वह सीधे आपके <b>Question Box</b> में जुड़ जाएगा।</p>
+      <p style="margin-top:0; color:#5f6368; font-size:13px;">किसी भी कमांड पर क्लिक करें, वह सीधे आपके <b>Question Box</b> में जुड़ जाएगा।
+      <b><a href="https://www.onemathematicalcat.org/MathJaxDocumentation/TeXSyntaxPrint.pdf"> Click here for complete commands.</a></p>
       <b>1. बीजगणित (Algebra)</b>
       <div class="cmd-grid">
         <div class="cmd-card" onclick="insertMathAndClose('\\frac{a}{b}')"><div>$\frac{a}{b}$</div><span class="cmd-code">\frac{a}{b}</span></div>
@@ -734,7 +721,6 @@ canvas { max-width: 100%; height: auto; }
         <div class="cmd-card" onclick="insertMathAndClose('\\sqrt{x}')"><div>$\sqrt{x}$</div><span class="cmd-code">\sqrt{x}</span></div>
         <div class="cmd-card" onclick="insertMathAndClose('a \\pm b')"><div>$a \pm b$</div><span class="cmd-code">a \pm b</span></div>
       </div>
-
       <br><b>2. त्रिकोणमिति एवं ज्यामिति (Trigonometry & Geometry)</b>
       <div class="cmd-grid">
         <div class="cmd-card" onclick="insertMathAndClose('\\sin\\theta')"><div>$\sin\theta$</div><span class="cmd-code">\sin\theta</span></div>
@@ -744,7 +730,6 @@ canvas { max-width: 100%; height: auto; }
         <div class="cmd-card" onclick="insertMathAndClose('\\angle ABC')"><div>$\angle ABC$</div><span class="cmd-code">\angle ABC</span></div>
         <div class="cmd-card" onclick="insertMathAndClose('\\Delta ABC')"><div>$\Delta ABC$</div><span class="cmd-code">\Delta ABC</span></div>
       </div>
-
       <br><b>3. संकेत (Symbols)</b>
       <div class="cmd-grid">
         <div class="cmd-card" onclick="insertMathAndClose('\\pi')"><div>$\pi$</div><span class="cmd-code">\pi</span></div>
@@ -765,9 +750,91 @@ canvas { max-width: 100%; height: auto; }
     </div>
     <div class="modal-body">
       <div class="video-container">
-        <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ" title="App Tutorial" allowfullscreen></iframe>
+        <iframe src="https://www.youtube.com/embed/5LZUeMPWIIU" title="App Tutorial" allowfullscreen></iframe>
       </div>
-      <p style="font-size: 13px; color: #5f6368;">जब चाहें आप अपना वीडियो लिंक यहाँ अपडेट कर सकते हैं।</p>
+      
+              <!-- TEXT TUTORIAL GUIDE -->
+        <hr style="margin: 20px 0; border: 0; border-top: 1px solid #e0e0e0;">
+
+        <div style="text-align: left; font-family: sans-serif;">
+          <h4 style="color: #1a73e8; margin-bottom: 12px; font-size: 15px;">📋 प्रश्न पत्र कैसे बनाएं?</h4>
+          
+          <div style="background: #f8f9fa; padding: 10px; border-radius: 6px; margin-bottom: 8px; border-left: 4px solid #1a73e8; font-size: 13px;">
+            <b>1. बेसिक विवरण भरें:</b> स्कूल का नाम, विषय, कुल समय, अंक और वॉटरमार्क दर्ज करें।
+          </div>
+
+          <div style="background: #f8f9fa; padding: 10px; border-radius: 6px; margin-bottom: 8px; border-left: 4px solid #1a73e8; font-size: 13px;">
+            <b>2. Question Type चुनें:</b> MCQ, Short/Long, Assertion-Reason या Case Study चुनें।
+          </div>
+
+          <div style="background: #f8f9fa; padding: 10px; border-radius: 6px; margin-bottom: 8px; border-left: 4px solid #1a73e8; font-size: 13px;">
+            <b>3. सूत्र और चित्र जोड़ें:</b> गणितीय सूत्रों के लिए <code>Math Symbols Σ</code> का उपयोग करें।
+          </div>
+
+          <div style="background: #f8f9fa; padding: 10px; border-radius: 6px; margin-bottom: 16px; border-left: 4px solid #1a73e8; font-size: 13px;">
+            <b>4. Export PDF:</b> Live Preview में जांचें और <code>Export PDF</code> पर क्लिक करें।
+          </div>
+
+          <h4 style="color: #1a73e8; margin-bottom: 10px; font-size: 15px;">🛠️ मुख्य फीचर्स</h4>
+          <table style="width: 100%; border-collapse: collapse; font-size: 12px; margin-bottom: 16px;">
+            <thead>
+              <tr style="background: #e8f0fe; color: #1a73e8;">
+                <th style="padding: 6px 8px; border: 1px solid #dadce0; text-align: left;">फीचर</th>
+                <th style="padding: 6px 8px; border: 1px solid #dadce0; text-align: left;">उपयोग</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td style="padding: 6px 8px; border: 1px solid #dadce0;"><b>MathJax</b></td>
+                <td style="padding: 6px 8px; border: 1px solid #dadce0;"><code>Math Symbols Σ</code> से गणितीय सूत्र जोड़ें। <a href="https://www.onemathematicalcat.org/MathJaxDocumentation/TeXSyntaxPrint.pdf"> Click here for complete commands.</a></td>
+              </tr>
+              <tr>
+                <td style="padding: 6px 8px; border: 1px solid #dadce0;"><b>JSON Backup</b></td>
+                <td style="padding: 6px 8px; border: 1px solid #dadce0;"><code>Save Backup</code> से पेपर सुरक्षित रखें और एडिट करें।</td>
+              </tr>
+              <tr>
+                <td style="padding: 6px 8px; border: 1px solid #dadce0;"><b>100% Offline</b></td>
+                <td style="padding: 6px 8px; border: 1px solid #dadce0;">बिना इंटरनेट पूरा काम करता है।</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <h4 style="color: #1a73e8; margin-bottom: 8px; font-size: 15px;">❓ अक्सर पूछे जाने वाले सवाल (FAQ)</h4>
+          <details style="margin-bottom: 6px; background: #f8f9fa; padding: 8px; border-radius: 6px; cursor: pointer;">
+            <summary style="font-weight: bold; font-size: 13px; color: #202124;">पुराने पेपर में बदलाव कैसे करें?</summary>
+            <p style="margin-top: 6px; font-size: 12px; color: #5f6368; margin-bottom: 0;"><code>Save Backup (.json)</code> फाइल डाउनलोड करें और बाद में <code>Load Backup</code> बटन से दोबारा लोड करके एडिट करें।</p>
+          </details>
+          <details style="margin-bottom: 6px; background: #f8f9fa; padding: 8px; border-radius: 6px; cursor: pointer;">
+            <summary style="font-weight: bold; font-size: 13px; color: #202124;">क्या ऐप में विकल्प जोड़/घटा सकते हैं?</summary>
+            <p style="margin-top: 6px; font-size: 12px; color: #5f6368; margin-bottom: 0;">हाँ, <code>+ Add Option</code> और डस्टबिन आइकॉन से विकल्प कस्टमाइज़ कर सकते हैं।</p>
+          </details>
+                    <details style="margin-bottom: 6px; background: #f8f9fa; padding: 8px; border-radius: 6px; cursor: pointer;">
+            <summary style="font-weight: bold; font-size: 13px; color: #202124;">क्या मेरे बनाए प्रश्न पत्र सुरक्षित हैं?</summary>
+            <p style="margin-top: 6px; font-size: 12px; color: #5f6368; margin-bottom: 0;">हाँ, आपका पूरा डेटा आपके ही डिवाइस में रहता है। कोई भी प्रश्न किसी सर्वर पर अपलोड नहीं होता, इसलिए आपका पेपर 100% प्राइवेट और सुरक्षित है।</p>
+          </details>
+
+          <details style="margin-bottom: 6px; background: #f8f9fa; padding: 8px; border-radius: 6px; cursor: pointer;">
+            <summary style="font-weight: bold; font-size: 13px; color: #202124;">प्रश्न पत्र में डायग्राम या फोटो कैसे जोड़ें?</summary>
+            <p style="margin-top: 6px; font-size: 12px; color: #5f6368; margin-bottom: 0;">प्रश्न टाइप करते समय नीचे दिए गए <code>Choose File</code> या <code>Attach Image</code> बटन से अपनी गैलरी से कोई भी फोटो या चित्र चुनकर जोड़ सकते हैं।</p>
+          </details>
+
+          <details style="margin-bottom: 6px; background: #f8f9fa; padding: 8px; border-radius: 6px; cursor: pointer;">
+            <summary style="font-weight: bold; font-size: 13px; color: #202124;">अलग-अलग सेक्शन (Section A, B, C) कैसे बनाएं?</summary>
+            <p style="margin-top: 6px; font-size: 12px; color: #5f6368; margin-bottom: 0;">प्रश्न जोड़ते समय <code>Heading / Instruction</code> वाले बॉक्स में "Section A" या "Section B" लिखकर प्रश्नों को अलग-अलग सेक्शन में बांट सकते हैं।</p>
+          </details>
+
+          <details style="margin-bottom: 6px; background: #f8f9fa; padding: 8px; border-radius: 6px; cursor: pointer;">
+            <summary style="font-weight: bold; font-size: 13px; color: #202124;">क्या यह ऐप मोबाइल और कंप्यूटर दोनों में चलेगा?</summary>
+            <p style="margin-top: 6px; font-size: 12px; color: #5f6368; margin-bottom: 0;">हाँ, यह ऐप पूरी तरह रिस्पॉन्सिव है। आप इसे मोबाइल, टैबलेट या लैपटॉप किसी भी डिवाइस के ब्राउज़र में आसानी से चला सकते हैं।</p>
+          </details>
+
+          <details style="margin-bottom: 6px; background: #f8f9fa; padding: 8px; border-radius: 6px; cursor: pointer;">
+            <summary style="font-weight: bold; font-size: 13px; color: #202124;">क्या हिंदी और अंग्रेजी (Bilingual) दोनों में पेपर बना सकते हैं?</summary>
+            <p style="margin-top: 6px; font-size: 12px; color: #5f6368; margin-bottom: 0;">हाँ, आप प्रश्न के टेक्स्ट बॉक्स में हिंदी और English दोनों भाषाएं एक साथ टाइप या पेस्ट कर सकते हैं।</p>
+          </details>
+
+        </div>
+
     </div>
   </div>
 </div>
@@ -775,12 +842,14 @@ canvas { max-width: 100%; height: auto; }
 <script>
 let questionsData = [];
 let currentDraftImage = null; // Base64 image
-let rawLoadedImageObj = null;
+let cropper = null;
+let cropContext = { type: 'main', index: null };
 
-// Dynamic arrays for crafting question
-let mcqOptions = ["Option A", "Option B", "Option C", "Option D"];
-let matchPairs = [{colA: "Item 1", colB: "Match A"}, {colA: "Item 2", colB: "Match B"}];
-let subQuestions = [{text: "Sub question 1", marks: "1"}];
+// Dynamic arrays for crafting questions (initial state empty for clean placeholders)
+let mcqOptions = ["", "", "", ""];
+let diagramOptions = [{text:"", image:null}, {text:"", image:null}, {text:"", image:null}, {text:"", image:null}];
+let matchPairs = [{colA: "", colB: ""}, {colA: "", colB: ""}];
+let subQuestions = [{text: "", marks: ""}];
 
 function switchView(viewId) {
   document.querySelectorAll('.view-container').forEach(view => {
@@ -795,7 +864,6 @@ function switchView(viewId) {
   }
 }
 
-/* WIZARD NAVIGATION FUNCTIONS */
 function goToStep2() {
   document.getElementById('wizardStep1').style.display = 'none';
   document.getElementById('wizardStep2').style.display = 'block';
@@ -836,63 +904,74 @@ function showToast(msg) {
 }
 
 function updatePaper() {
-  document.getElementById('pSchool').innerText = document.getElementById('school').value;
-  document.getElementById('pExam').innerText = document.getElementById('exam').value;
-  document.getElementById('pSub').innerText = document.getElementById('sub').value;
-  document.getElementById('pTime').innerText = document.getElementById('time').value;
-  document.getElementById('pMarks').innerText = document.getElementById('marks').value;
+  document.getElementById('pSchool').innerText = document.getElementById('school').value || "Write Your School/Institution Name Here";
+  document.getElementById('pExam').innerText = document.getElementById('exam').value || "Examination Type";
+  document.getElementById('pSub').innerText = document.getElementById('sub').value || "Class | Subject";
+  document.getElementById('pTime').innerText = document.getElementById('time').value || "00:00 Hours";
+  document.getElementById('pMarks').innerText = document.getElementById('marks').value || "100";
   autoCheckSubjectForMath();
   saveDraft();
 }
 
-/* QUESTION TYPES & UI DYNAMIC CONTROL */
+/* QUESTION TYPES & DYNAMIC UI CONTROL */
 function handleQTypeChange() {
-    const type = document.getElementById('qType').value;
-    const mcqBox = document.getElementById('mcqBox');
-    const matchBox = document.getElementById('matchBox');
-    const subQBox = document.getElementById('subQBox');
-    const qMarks = document.getElementById('qMarks');
+  const type = document.getElementById('qType').value;
+  const mcqBox = document.getElementById('mcqBox');
+  const diagramBox = document.getElementById('diagramBox');
+  const matchBox = document.getElementById('matchBox');
+  const subQBox = document.getElementById('subQBox');
+  const qMarks = document.getElementById('qMarks');
 
-    mcqBox.style.display = 'none';
-    matchBox.style.display = 'none';
-    subQBox.style.display = 'none';
+  mcqBox.style.display = 'none';
+  diagramBox.style.display = 'none';
+  matchBox.style.display = 'none';
+  subQBox.style.display = 'none';
 
-    if (type === 'MCQ_SINGLE' || type === 'MCQ_MULTI' || type === 'ASSERTION') {
-        mcqBox.style.display = 'block';
-        
-        // 🔑 FIX: Agar options 0 hain YA fir True/False waale hain, toh default 4 options reset karo
-        if (mcqOptions.length === 0 || mcqOptions[0] === "True") {
-            mcqOptions = ["Option A", "Option B", "Option C", "Option D"];
-        }
-        
-        renderMCQInputs();
-        qMarks.value = 1;
-    } else if (type === 'TRUE_FALSE') {
-        mcqBox.style.display = 'block';
-        mcqOptions = ["True", "False"];
-        renderMCQInputs();
-        qMarks.value = 1;
-    } else if (type === 'MATCH') {
-        matchBox.style.display = 'block';
-        if (matchPairs.length === 0) matchPairs = [{colA: "1.", colB: "A."}];
-        renderMatchInputs();
-        qMarks.value = 4;
-    } else if (type === 'PASSAGE' || type === 'DIAGRAM') {
-        subQBox.style.display = 'block';
-        if (subQuestions.length === 0) subQuestions = [{text: "", marks: "1"}];
-        renderSubQInputs();
-        qMarks.value = 5;
-    } else if (type === 'FILL_BLANK' || type === 'VSA') {
-        qMarks.value = 1;
-    } else if (type === 'SHORT' || type === 'NUMERICAL') {
-        qMarks.value = 2;
-    } else if (type === 'LONG') {
-        qMarks.value = 5;
+  if (type === 'MCQ_SINGLE' || type === 'MCQ_MULTI' || type === 'ASSERTION') {
+    mcqBox.style.display = 'block';
+    if (mcqOptions.length === 0) mcqOptions = ["", "", "", ""];
+    renderMCQInputs();
+    qMarks.value = "";
+    qMarks.placeholder = "1";
+  } else if (type === 'TRUE_FALSE') {
+    mcqBox.style.display = 'block';
+    mcqOptions = ["True", "False"];
+    renderMCQInputs();
+    qMarks.value = "";
+    qMarks.placeholder = "1";
+  } else if (type === 'DIAGRAM') {
+    diagramBox.style.display = 'block';
+    if (diagramOptions.length === 0) {
+      diagramOptions = [{text:"", image:null}, {text:"", image:null}, {text:"", image:null}, {text:"", image:null}];
     }
+    renderDiagramInputs();
+    qMarks.value = "";
+    qMarks.placeholder = "5";
+  } else if (type === 'MATCH') {
+    matchBox.style.display = 'block';
+    if (matchPairs.length === 0) matchPairs = [{colA: "", colB: ""}, {colA: "", colB: ""}];
+    renderMatchInputs();
+    qMarks.value = "";
+    qMarks.placeholder = "4";
+  } else if (type === 'PASSAGE') {
+    subQBox.style.display = 'block';
+    if (subQuestions.length === 0) subQuestions = [{text: "", marks: ""}];
+    renderSubQInputs();
+    qMarks.value = "";
+    qMarks.placeholder = "5";
+  } else if (type === 'FILL_BLANK' || type === 'VSA') {
+    qMarks.value = "";
+    qMarks.placeholder = "1";
+  } else if (type === 'SHORT' || type === 'NUMERICAL') {
+    qMarks.value = "";
+    qMarks.placeholder = "2";
+  } else if (type === 'LONG') {
+    qMarks.value = "";
+    qMarks.placeholder = "5";
+  }
 }
 
-
-/* DYNAMIC MCQ OPTIONS HANDLERS */
+/* DYNAMIC STANDARD MCQ OPTIONS HANDLERS */
 function renderMCQInputs() {
   const container = document.getElementById('mcqOptionsList');
   container.innerHTML = '';
@@ -901,7 +980,7 @@ function renderMCQInputs() {
     div.className = 'opt-item';
     div.innerHTML = `
       <span style="font-size:12px; font-weight:bold; width:25px;">(${String.fromCharCode(65 + idx)})</span>
-      <input type="text" value="${opt}" oninput="mcqOptions[${idx}] = this.value">
+      <input type="text" placeholder="Option ${String.fromCharCode(65 + idx)}" value="${opt}" oninput="mcqOptions[${idx}] = this.value">
       <button type="button" class="btn-sm-del" onclick="removeMCQOption(${idx})">🗑️</button>
     `;
     container.appendChild(div);
@@ -909,13 +988,79 @@ function renderMCQInputs() {
 }
 
 function addMCQOption() {
-  mcqOptions.push(`Option ${String.fromCharCode(65 + mcqOptions.length)}`);
+  mcqOptions.push("");
   renderMCQInputs();
 }
 
 function removeMCQOption(idx) {
   mcqOptions.splice(idx, 1);
   renderMCQInputs();
+}
+
+/* DYNAMIC DIAGRAM OPTIONS HANDLERS (WITH IMAGES) */
+function renderDiagramInputs() {
+  const container = document.getElementById('diagramOptionsList');
+  container.innerHTML = '';
+  diagramOptions.forEach((opt, idx) => {
+    const div = document.createElement('div');
+    div.style.border = '1px solid #dadce0';
+    div.style.padding = '8px';
+    div.style.borderRadius = '6px';
+    div.style.marginBottom = '8px';
+    div.style.background = '#fff';
+
+    let imgHtml = '';
+    if (opt.image) {
+      imgHtml = `
+        <div style="display:flex; align-items:center; gap:8px; margin-top:6px;">
+          <img src="${opt.image}" style="max-height:50px; border:1px solid #ccc; border-radius:4px;">
+          <button type="button" class="hdr-btn" style="background:#e8f0fe; color:var(--primary); border:1px solid #baddfd; padding:3px 8px;" onclick="openCropModal('diagram', ${idx})">✂️ Crop</button>
+          <button type="button" class="hdr-btn" style="background:#fce8e6; color:#c5221f; border:1px solid #fad2cf; padding:3px 8px;" onclick="removeDiagramOptImage(${idx})">🗑️ Remove Image</button>
+        </div>
+      `;
+    }
+
+    div.innerHTML = `
+      <div style="display:flex; align-items:center; gap:6px;">
+        <span style="font-size:12px; font-weight:bold; width:25px;">(${String.fromCharCode(65 + idx)})</span>
+        <input type="text" placeholder="Option ${String.fromCharCode(65 + idx)} Text (Optional)" value="${opt.text || ''}" oninput="diagramOptions[${idx}].text = this.value" style="flex:1;">
+        <button type="button" class="btn-sm-del" onclick="removeDiagramOption(${idx})">🗑️</button>
+      </div>
+      <div style="margin-top:6px;">
+        <label style="margin:0 0 2px 0; font-size:11px; color:#5f6368;">Option ${String.fromCharCode(65 + idx)} Image File:</label>
+        <input type="file" accept="image/*" onchange="handleDiagramOptImageUpload(event, ${idx})">
+        ${imgHtml}
+      </div>
+    `;
+    container.appendChild(div);
+  });
+}
+
+function addDiagramOption() {
+  diagramOptions.push({text: "", image: null});
+  renderDiagramInputs();
+}
+
+function removeDiagramOption(idx) {
+  diagramOptions.splice(idx, 1);
+  renderDiagramInputs();
+}
+
+function handleDiagramOptImageUpload(event, idx) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    diagramOptions[idx].image = e.target.result;
+    renderDiagramInputs();
+    openCropModal('diagram', idx);
+  };
+  reader.readAsDataURL(file);
+}
+
+function removeDiagramOptImage(idx) {
+  diagramOptions[idx].image = null;
+  renderDiagramInputs();
 }
 
 /* DYNAMIC MATCH THE FOLLOWING HANDLERS */
@@ -926,9 +1071,9 @@ function renderMatchInputs() {
     const div = document.createElement('div');
     div.className = 'pair-item';
     div.innerHTML = `
-      <input type="text" placeholder="Column A item" value="${pair.colA}" oninput="matchPairs[${idx}].colA = this.value" style="flex:1;">
+      <input type="text" placeholder="Column A item ${idx + 1}" value="${pair.colA}" oninput="matchPairs[${idx}].colA = this.value" style="flex:1;">
       <span style="font-weight:bold;">↔</span>
-      <input type="text" placeholder="Column B item" value="${pair.colB}" oninput="matchPairs[${idx}].colB = this.value" style="flex:1;">
+      <input type="text" placeholder="Column B item ${String.fromCharCode(65 + idx)}" value="${pair.colB}" oninput="matchPairs[${idx}].colB = this.value" style="flex:1;">
       <button type="button" class="btn-sm-del" onclick="removeMatchPair(${idx})">🗑️</button>
     `;
     container.appendChild(div);
@@ -963,7 +1108,7 @@ function renderSubQInputs() {
 }
 
 function addSubQuestion() {
-  subQuestions.push({text: "", marks: "1"});
+  subQuestions.push({text: "", marks: ""});
   renderSubQInputs();
 }
 
@@ -972,88 +1117,82 @@ function removeSubQuestion(idx) {
   renderSubQInputs();
 }
 
-/* IMAGE UPLOAD & SMART CROP (Cropper.js Drag-to-Crop) */
-let cropper = null;
-
-// 1. Image select hote hi preview dikhayen aur Crop Modal open karein
+/* MAIN IMAGE & SMART CROP HANDLERS */
 function handleImageUpload(event) {
-    const file = event.target.files[0];
-    if (!file) return;
+  const file = event.target.files[0];
+  if (!file) return;
 
-    const reader = new FileReader();
-    reader.onload = function(e) {
-        currentDraftImage = e.target.result;
-
-        // Modal wali image me source daalein
-        const cropTarget = document.getElementById('cropTargetImage');
-        if (cropTarget) cropTarget.src = currentDraftImage;
-
-        // UI buttons show karein
-        document.getElementById('draftImgPreview').src = currentDraftImage;
-        document.getElementById('imagePreviewBox').style.display = 'block';
-        document.getElementById('cropBtn').style.display = 'inline-block';
-        document.getElementById('delImgBtn').style.display = 'inline-block';
-
-        // Direct crop modal open karein
-        openCropModal();
-    };
-    reader.readAsDataURL(file);
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    currentDraftImage = e.target.result;
+    document.getElementById('draftImgPreview').src = currentDraftImage;
+    document.getElementById('imagePreviewBox').style.display = 'block';
+    document.getElementById('cropBtn').style.display = 'inline-block';
+    document.getElementById('delImgBtn').style.display = 'inline-block';
+    openCropModal('main');
+  };
+  reader.readAsDataURL(file);
 }
 
-// 2. Modal open karke Touch/Mouse Cropper load karein
-function openCropModal() {
-    const modal = document.getElementById('cropModal');
-    const image = document.getElementById('cropTargetImage');
+function openCropModal(type = 'main', index = null) {
+  cropContext = { type, index };
+  let imgSrc = null;
 
-    modal.style.display = 'block';
+  if (type === 'main') {
+    imgSrc = currentDraftImage;
+  } else if (type === 'diagram' && index !== null) {
+    imgSrc = diagramOptions[index].image;
+  }
 
-    // Image render hone ke baad Cropper start hoga
-    setTimeout(() => {
-        if (cropper) {
-            cropper.destroy();
-        }
+  if (!imgSrc) return;
 
-        cropper = new Cropper(image, {
-            viewMode: 1,
-            autoCropArea: 0.85,
-            responsive: true,
-            background: true
-        });
-    }, 100);
+  const modal = document.getElementById('cropModal');
+  const image = document.getElementById('cropTargetImage');
+  image.src = imgSrc;
+  modal.style.display = 'block';
+
+  setTimeout(() => {
+    if (cropper) cropper.destroy();
+    cropper = new Cropper(image, {
+      viewMode: 1,
+      autoCropArea: 0.85,
+      responsive: true,
+      background: true
+    });
+  }, 100);
 }
 
-
-// 3. Crop Apply karke Save karein
 function applyCrop() {
-    if (!cropper) return;
-
-    const canvas = cropper.getCroppedCanvas();
-    if (canvas) {
-        currentDraftImage = canvas.toDataURL('image/png');
-        document.getElementById('draftImgPreview').src = currentDraftImage;
+  if (!cropper) return;
+  const canvas = cropper.getCroppedCanvas();
+  if (canvas) {
+    const croppedData = canvas.toDataURL('image/png');
+    if (cropContext.type === 'main') {
+      currentDraftImage = croppedData;
+      document.getElementById('draftImgPreview').src = currentDraftImage;
+    } else if (cropContext.type === 'diagram' && cropContext.index !== null) {
+      diagramOptions[cropContext.index].image = croppedData;
+      renderDiagramInputs();
     }
-
-    closeCropModal();
+  }
+  closeCropModal();
 }
 
-// 4. Modal Close karein
 function closeCropModal() {
-    document.getElementById('cropModal').style.display = 'none';
-    if (cropper) {
-        cropper.destroy();
-        cropper = null;
-    }
+  document.getElementById('cropModal').style.display = 'none';
+  if (cropper) {
+    cropper.destroy();
+    cropper = null;
+  }
 }
 
-// 5. Image Remove/Delete Feature
 function removeDraftImage() {
-    currentDraftImage = null;
-    document.getElementById('imageInput').value = '';
-    document.getElementById('imagePreviewBox').style.display = 'none';
-    document.getElementById('cropBtn').style.display = 'none';
-    document.getElementById('delImgBtn').style.display = 'none';
+  currentDraftImage = null;
+  document.getElementById('imageInput').value = '';
+  document.getElementById('imagePreviewBox').style.display = 'none';
+  document.getElementById('cropBtn').style.display = 'none';
+  document.getElementById('delImgBtn').style.display = 'none';
 }
-
 
 function insertMath(symbol) {
   const textarea = document.getElementById('qText');
@@ -1075,9 +1214,10 @@ function addQuestion() {
   const type = document.getElementById('qType').value;
   const heading = document.getElementById('qHeading').value.trim();
   const text = document.getElementById('qText').value.trim();
-  const marks = document.getElementById('qMarks').value;
+  const marksInput = document.getElementById('qMarks');
+  const marks = marksInput.value.trim() || marksInput.placeholder || "1";
 
-  if (!text && type !== 'MATCH') return alert("कृपया प्रश्न का विवरण दर्ज करें!");
+  if (!text && type !== 'MATCH' && type !== 'DIAGRAM') return alert("कृपया प्रश्न का विवरण दर्ज करें!");
 
   const newQ = {
     id: Date.now().toString(),
@@ -1087,8 +1227,9 @@ function addQuestion() {
     marks: marks,
     image: currentDraftImage,
     options: (type.startsWith('MCQ') || type === 'TRUE_FALSE' || type === 'ASSERTION') ? [...mcqOptions] : [],
+    diagramOptions: (type === 'DIAGRAM') ? JSON.parse(JSON.stringify(diagramOptions)) : [],
     matchPairs: (type === 'MATCH') ? JSON.parse(JSON.stringify(matchPairs)) : [],
-    subQuestions: (type === 'PASSAGE' || type === 'DIAGRAM') ? JSON.parse(JSON.stringify(subQuestions)) : []
+    subQuestions: (type === 'PASSAGE') ? JSON.parse(JSON.stringify(subQuestions)) : []
   };
 
   questionsData.push(newQ);
@@ -1098,6 +1239,7 @@ function addQuestion() {
   // Reset Input Form
   document.getElementById('qHeading').value = '';
   document.getElementById('qText').value = '';
+  document.getElementById('qMarks').value = '';
   removeDraftImage();
   showToast(`✅ प्रश्न सफलतापूर्वक जुड़ गया!`);
 
@@ -1139,14 +1281,7 @@ function loadDraft() {
       updatePaper();
     }
     if (data.questions && Array.isArray(data.questions)) {
-      // Backward compatibility converter
-      questionsData = data.questions.map(q => {
-        if (q.type === 'MCQ' && !q.options) {
-          q.type = 'MCQ_SINGLE';
-          q.options = [q.optA, q.optB, q.optC, q.optD].filter(Boolean);
-        }
-        return q;
-      });
+      questionsData = data.questions;
       renderAllQuestionsFromData();
       if (questionsData.length > 0) {
         goToStep2();
@@ -1174,11 +1309,12 @@ function deleteSingleQuestion(id) {
 function editQuestion(id) {
   const q = questionsData.find(item => item.id === id);
   if (!q) return;
+
   document.getElementById('qType').value = q.type;
   handleQTypeChange();
   document.getElementById('qHeading').value = q.heading || '';
   document.getElementById('qText').value = q.text || '';
-  document.getElementById('qMarks').value = q.marks || '1';
+  document.getElementById('qMarks').value = q.marks || '';
 
   if (q.image) {
     currentDraftImage = q.image;
@@ -1190,6 +1326,10 @@ function editQuestion(id) {
   if (q.options && q.options.length) {
     mcqOptions = [...q.options];
     renderMCQInputs();
+  }
+  if (q.diagramOptions && q.diagramOptions.length) {
+    diagramOptions = JSON.parse(JSON.stringify(q.diagramOptions));
+    renderDiagramInputs();
   }
   if (q.matchPairs && q.matchPairs.length) {
     matchPairs = JSON.parse(JSON.stringify(q.matchPairs));
@@ -1261,7 +1401,7 @@ async function renderAllQuestionsFromData() {
           </div>
         </div>`;
 
-        // Render Attached Image
+        // Render Main Attached Image
         if (q.image) {
           html += `<img src="${q.image}" class="q-attached-img">`;
         }
@@ -1275,11 +1415,25 @@ async function renderAllQuestionsFromData() {
           html += `</div>`;
         }
 
+        // Render Diagram Options (Text + Option Image)
+        if (q.diagramOptions && q.diagramOptions.length > 0) {
+          html += `<div class="options-grid" style="grid-template-columns: 1fr 1fr; gap:10px; margin-top:8px;">`;
+          q.diagramOptions.forEach((opt, idx) => {
+            html += `<div style="border:1px solid #eee; padding:6px; border-radius:4px; background:#fafafa;">`;
+            html += `<span style="font-weight:bold;">(${String.fromCharCode(65 + idx)})</span> ${opt.text || ''}`;
+            if (opt.image) {
+              html += `<img src="${opt.image}" style="max-width:100%; max-height:120px; display:block; margin-top:4px; object-fit:contain; border:1px solid #ddd; border-radius:4px;">`;
+            }
+            html += `</div>`;
+          });
+          html += `</div>`;
+        }
+
         // Render Match Pairs Table
         if (q.matchPairs && q.matchPairs.length > 0) {
           html += `<table class="match-table-preview">
-            <thead><tr><th>Column A</th><th>Column B</th></tr></thead>
-            <tbody>`;
+          <thead><tr><th>Column A</th><th>Column B</th></tr></thead>
+          <tbody>`;
           q.matchPairs.forEach((pair, idx) => {
             html += `<tr><td><b>${idx + 1}.</b> ${pair.colA}</td><td><b>(${String.fromCharCode(97 + idx)})</b> ${pair.colB}</td></tr>`;
           });
@@ -1346,6 +1500,7 @@ function applyScale(scale) {
   currentScale = Math.min(Math.max(0.3, scale), 1.5);
   paper.style.transform = `scale(${currentScale})`;
 }
+
 function adjustZoom(delta) { applyScale(currentScale + delta); }
 function resetZoom() { applyScale(0.55); }
 
@@ -1462,13 +1617,13 @@ async function downloadPDF() {
 }
 
 window.addEventListener('DOMContentLoaded', loadDraft);
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('./sw.js')
-        .then((reg) => console.log('Service Worker Registered!', reg))
-        .catch((err) => console.error('Service Worker Registration Failed!', err));
-    });
-  }
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js')
+      .then((reg) => console.log('Service Worker Registered!', reg))
+      .catch((err) => console.error('Service Worker Registration Failed!', err));
+  });
+}
 </script>
 
 </body>
