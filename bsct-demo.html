@@ -1,0 +1,922 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bihar Council on Science and Technology — Online Exam Portal</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Roboto, Tahoma, Geneva, Verdana, sans-serif;
+        }
+        body {
+            margin: 0;
+            background-color: #f4f6f9;
+            color: #1f2937;
+        }
+        .hidden {
+            display: none !important;
+        }
+
+        /* Top Portal Bar */
+        .portal-topbar {
+            background-color: #0b2c4d;
+            color: #ffffff;
+            padding: 10px 18px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            border-bottom: 3px solid #eab308;
+        }
+        .portal-brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .portal-brand-title {
+            font-size: 1rem;
+            font-weight: 700;
+            line-height: 1.25;
+        }
+        .portal-brand-sub {
+            font-size: 0.76rem;
+            color: #cbd5e1;
+        }
+        .timer-pill {
+            background-color: #dc2626;
+            color: #ffffff;
+            padding: 6px 14px;
+            border-radius: 4px;
+            font-weight: 700;
+            font-size: 0.98rem;
+            letter-spacing: 0.5px;
+        }
+
+        /* Candidate Info Strip (Registration No only, No Name) */
+        .candidate-strip {
+            background-color: #ffffff;
+            border-bottom: 1px solid #d1d5db;
+            padding: 8px 18px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            font-size: 0.88rem;
+        }
+        .reg-chip {
+            background-color: #eff6ff;
+            color: #1d4ed8;
+            border: 1px solid #bfdbfe;
+            padding: 3px 10px;
+            border-radius: 4px;
+            font-weight: 700;
+        }
+
+        /* Tab Switch Warning */
+        .tab-warning-bar {
+            background-color: #fef2f2;
+            color: #991b1b;
+            border-bottom: 1px solid #fca5a5;
+            padding: 7px 18px;
+            font-size: 0.84rem;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        /* Sign-In & Instruction Panels */
+        .panel-card {
+            max-width: 640px;
+            margin: 30px auto;
+            background-color: #ffffff;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            overflow: hidden;
+        }
+        .panel-header {
+            background-color: #163a5f;
+            color: #ffffff;
+            padding: 12px 18px;
+            font-size: 1rem;
+            font-weight: 600;
+        }
+        .panel-body {
+            padding: 20px;
+        }
+        .info-callout {
+            background-color: #f8fafc;
+            border-left: 4px solid #0b2c4d;
+            padding: 10px 14px;
+            font-size: 0.86rem;
+            color: #374151;
+            margin-bottom: 18px;
+        }
+        .field-group {
+            margin-bottom: 14px;
+        }
+        .field-group label {
+            display: block;
+            font-size: 0.88rem;
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: #111827;
+        }
+        .field-group input, .field-group select {
+            width: 100%;
+            padding: 9px 11px;
+            border: 1px solid #9ca3af;
+            border-radius: 4px;
+            font-size: 0.96rem;
+            background-color: #ffffff;
+        }
+        .field-group input:focus, .field-group select:focus {
+            outline: none;
+            border-color: #1d4ed8;
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 9px 15px;
+            border-radius: 4px;
+            border: 1px solid transparent;
+            font-size: 0.88rem;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .btn-signin {
+            width: 100%;
+            padding: 11px;
+            font-size: 0.98rem;
+            background-color: #0b2c4d;
+            color: #ffffff;
+        }
+        .btn-signin:hover { background-color: #144374; }
+
+        .btn-start {
+            background-color: #15803d;
+            color: #ffffff;
+            padding: 10px 20px;
+            font-size: 0.95rem;
+        }
+        .btn-start:hover { background-color: #166534; }
+
+        .btn-next {
+            background-color: #15803d;
+            color: #ffffff;
+        }
+        .btn-next:hover { background-color: #166534; }
+
+        .btn-prev {
+            background-color: #e5e7eb;
+            color: #1f2937;
+        }
+        .btn-prev:hover { background-color: #d1d5db; }
+
+        .btn-clear {
+            background-color: #ffffff;
+            color: #374151;
+            border-color: #9ca3af;
+        }
+        .btn-clear:hover { background-color: #f3f4f6; }
+
+        .btn-submit-test {
+            width: 100%;
+            padding: 10px;
+            background-color: #b91c1c;
+            color: #ffffff;
+            font-size: 0.94rem;
+        }
+        .btn-submit-test:hover { background-color: #991b1b; }
+
+        /* Exam Layout */
+        .exam-grid {
+            display: grid;
+            grid-template-columns: 1fr 290px;
+            min-height: calc(100vh - 102px);
+        }
+        @media (max-width: 860px) {
+            .exam-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        .question-section {
+            background-color: #ffffff;
+            padding: 18px 22px;
+            border-right: 1px solid #d1d5db;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        .q-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 10px;
+            margin-bottom: 16px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        .q-idx-label {
+            font-weight: 700;
+            color: #0b2c4d;
+            font-size: 1rem;
+        }
+        .q-marks-badge {
+            font-size: 0.78rem;
+            font-weight: 600;
+            background-color: #f3f4f6;
+            border: 1px solid #d1d5db;
+            padding: 3px 9px;
+            border-radius: 4px;
+        }
+        .q-text {
+            font-size: 1.06rem;
+            font-weight: 600;
+            line-height: 1.5;
+            margin-bottom: 18px;
+        }
+        .opt-item {
+            display: flex;
+            align-items: center;
+            padding: 11px 13px;
+            border: 1px solid #d1d5db;
+            border-radius: 4px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            background-color: #ffffff;
+        }
+        .opt-item:hover {
+            background-color: #f8fafc;
+            border-color: #60a5fa;
+        }
+        .opt-item.active-opt {
+            background-color: #eff6ff;
+            border-color: #2563eb;
+            font-weight: 600;
+        }
+        .opt-item input {
+            margin-right: 11px;
+            transform: scale(1.15);
+            cursor: pointer;
+        }
+        .q-controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            padding-top: 14px;
+            margin-top: 18px;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        /* Palette Sidebar */
+        .palette-section {
+            background-color: #f9fafb;
+            padding: 14px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        .legend-box {
+            background-color: #ffffff;
+            border: 1px solid #d1d5db;
+            border-radius: 4px;
+            padding: 10px;
+            margin-bottom: 12px;
+            font-size: 0.78rem;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+        .legend-row {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .sq-badge {
+            width: 18px;
+            height: 18px;
+            border-radius: 3px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            font-weight: 700;
+            border: 1px solid #9ca3af;
+        }
+        .b-ans { background: #16a34a; color: #fff; border-color: #15803d; }
+        .b-notans { background: #ef4444; color: #fff; border-color: #dc2626; }
+        .b-notvis { background: #ffffff; color: #1f2937; }
+
+        .palette-box-title {
+            background-color: #0b2c4d;
+            color: #ffffff;
+            padding: 7px 10px;
+            font-size: 0.86rem;
+            font-weight: 600;
+            border-radius: 4px 4px 0 0;
+        }
+        .palette-nums {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 6px;
+            background-color: #ffffff;
+            border: 1px solid #d1d5db;
+            border-top: none;
+            border-radius: 0 0 4px 4px;
+            padding: 10px;
+            margin-bottom: 14px;
+        }
+        .num-btn {
+            height: 33px;
+            border: 1px solid #9ca3af;
+            background-color: #ffffff;
+            color: #1f2937;
+            font-weight: 700;
+            font-size: 0.84rem;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+        .num-btn.ans { background: #16a34a; color: #fff; border-color: #15803d; }
+        .num-btn.notans { background: #ef4444; color: #fff; border-color: #dc2626; }
+        .num-btn.current { outline: 2.5px solid #1d4ed8; outline-offset: 1px; }
+
+        /* Result Screen */
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(125px, 1fr));
+            gap: 10px;
+            margin: 16px 0;
+        }
+        .summary-card {
+            background-color: #f9fafb;
+            border: 1px solid #d1d5db;
+            border-radius: 4px;
+            padding: 12px;
+            text-align: center;
+        }
+        .summary-val {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #0b2c4d;
+        }
+        .summary-lbl {
+            font-size: 0.8rem;
+            color: #4b5563;
+            margin-top: 3px;
+        }
+        .ans-row {
+            border-bottom: 1px solid #e5e7eb;
+            padding: 10px 0;
+            font-size: 0.92rem;
+        }
+        .txt-right { color: #15803d; font-weight: 600; }
+        .txt-wrong { color: #dc2626; font-weight: 600; }
+    </style>
+</head>
+<body>
+
+<div class="portal-topbar">
+    <div class="portal-brand">
+        <div>
+            <div class="portal-brand-title">Bihar Council on Science and Technology, Patna</div>
+            <div class="portal-brand-sub">Online Talent Search Examination Portal (Demo Practice)</div>
+        </div>
+    </div>
+    <div id="top-timer" class="timer-pill hidden">Time Left: 30:00</div>
+</div>
+
+<div id="candidate-bar" class="candidate-strip hidden">
+    <div>
+        <strong>Registration No:</strong> <span class="reg-chip" id="bar-reg"></span>
+        &nbsp;|&nbsp;
+        <strong>Class:</strong> <span id="bar-class"></span>
+        &nbsp;|&nbsp;
+        <strong>Subject:</strong> <span id="bar-subject"></span>
+    </div>
+    <div style="font-size: 0.8rem; color: #4b5563;">
+        25 MCQs | 30 Min | +4 / -1
+    </div>
+</div>
+
+<div id="tab-alert" class="tab-warning-bar hidden">
+    ⚠️ चेतावनी: परीक्षा के दौरान ब्राउज़र टैब बदलना या स्क्रीन से बाहर जाना वर्जित है! Switch Count: <span id="switch-num">0</span>
+</div>
+
+<!-- 1. SIGN IN SCREEN -->
+<div id="signin-screen" class="panel-card">
+    <div class="panel-header">Sign In — Candidate Examination Login</div>
+    <div class="panel-body">
+        <div class="info-callout">
+            <strong>अभ्यास मोड:</strong> कोई भी विद्यार्थी अपना <strong>Registration No</strong> और कोई भी <strong>Dummy Password</strong> डालकर लॉगिन कर सकता है। स्क्रीन पर नाम नहीं दिखाया जाएगा।
+        </div>
+
+        <div class="field-group">
+            <label for="sel-class">Class (कक्षा)</label>
+            <select id="sel-class">
+                <option value="7">Class 7</option>
+                <option value="9">Class 9</option>
+            </select>
+        </div>
+
+        <div class="field-group">
+            <label for="sel-subject">Test / Subject (परीक्षा / विषय)</label>
+            <select id="sel-subject">
+                <option value="math">Srinivasa Ramanujan Talent Search Test in Mathematics</option>
+                <option value="science">Sir C.V. Raman Talent Search Test in Science</option>
+            </select>
+        </div>
+
+        <div class="field-group">
+            <label for="inp-reg">Registration No / Username</label>
+            <input type="text" id="inp-reg" placeholder="Enter Registration No (e.g. 250096662)">
+        </div>
+
+        <div class="field-group">
+            <label for="inp-pass">Password (DOB - DDMMYYYY)</label>
+            <input type="password" id="inp-pass" placeholder="Enter any dummy password">
+        </div>
+
+        <button class="btn btn-signin" onclick="proceedToInstructions()">Sign In</button>
+    </div>
+</div>
+
+<!-- 2. INSTRUCTIONS SCREEN -->
+<div id="instructions-screen" class="panel-card hidden">
+    <div class="panel-header">Important Examination Instructions</div>
+    <div class="panel-body">
+        <ol style="line-height: 1.7; padding-left: 18px; margin-top: 0; font-size: 0.93rem;">
+            <li>परीक्षा की कुल अवधि <strong>30 मिनट</strong> होगी और कुल <strong>25 बहुविकल्पीय प्रश्न (MCQs)</strong> होंगे।</li>
+            <li>प्रत्येक सही उत्तर के लिए <strong>+4 अंक</strong> और गलत उत्तर के लिए <strong>-1 अंक</strong> काटा जाएगा।</li>
+            <li>परीक्षा के दौरान ब्राउज़र स्विच करना, दूसरा टैब खोलना या स्क्रीनशॉट लेना वर्जित है।</li>
+            <li>समय समाप्त होने पर उत्तर पत्रक स्वतः (Auto-Submit) जमा हो जाएगा।</li>
+        </ol>
+
+        <label style="display: flex; align-items: center; gap: 8px; font-size: 0.9rem; cursor: pointer; margin: 16px 0;">
+            <input type="checkbox" id="chk-agree" style="transform: scale(1.15);">
+            मैंने सभी निर्देश पढ़ लिए हैं और मैं परीक्षा शुरू करने के लिए तैयार हूँ।
+        </label>
+
+        <div style="display: flex; gap: 10px;">
+            <button class="btn btn-prev" onclick="backToSignIn()">Back</button>
+            <button class="btn btn-start" onclick="startTest()">Start Examination</button>
+        </div>
+    </div>
+</div>
+
+<!-- 3. EXAM SCREEN -->
+<div id="exam-screen" class="exam-grid hidden">
+    <div class="question-section">
+        <div>
+            <div class="q-meta">
+                <span class="q-idx-label" id="q-label">Question 1 of 25</span>
+                <span class="q-marks-badge">+4 Marks / -1 Negative</span>
+            </div>
+            <div class="q-text" id="q-prompt"></div>
+            <div id="q-choices"></div>
+        </div>
+
+        <div class="q-controls">
+            <button class="btn btn-next" onclick="saveAndMoveNext()">Save &amp; Next</button>
+            <button class="btn btn-clear" onclick="clearChoice()">Clear Response</button>
+            <button class="btn btn-prev" onclick="movePrevious()">Previous</button>
+        </div>
+    </div>
+
+    <div class="palette-section">
+        <div>
+            <div class="legend-box">
+                <div class="legend-row">
+                    <span class="sq-badge b-ans" id="c-ans">0</span>
+                    <span>Answered</span>
+                </div>
+                <div class="legend-row">
+                    <span class="sq-badge b-notans" id="c-notans">0</span>
+                    <span>Not Answered</span>
+                </div>
+                <div class="legend-row">
+                    <span class="sq-badge b-notvis" id="c-notvis">25</span>
+                    <span>Not Visited</span>
+                </div>
+            </div>
+
+            <div class="palette-box-title">Question Palette</div>
+            <div class="palette-nums" id="palette-container"></div>
+        </div>
+
+        <button class="btn btn-submit-test" onclick="confirmSubmitTest()">Submit Test</button>
+    </div>
+</div>
+
+<!-- 4. RESULT SCREEN -->
+<div id="result-screen" class="panel-card hidden" style="max-width: 780px;">
+    <div class="panel-header">Examination Result Summary</div>
+    <div class="panel-body">
+        <p style="margin-top: 0; font-size: 0.92rem;">
+            <strong>Registration No:</strong> <span id="res-reg"></span> &nbsp;|&nbsp;
+            <strong>Class:</strong> <span id="res-class"></span> &nbsp;|&nbsp;
+            <strong>Subject:</strong> <span id="res-subj"></span> &nbsp;|&nbsp;
+            <strong>Time Taken:</strong> <span id="res-time"></span>
+        </p>
+
+        <div class="summary-grid">
+            <div class="summary-card">
+                <div class="summary-val" id="res-score">0</div>
+                <div class="summary-lbl">Total Score</div>
+            </div>
+            <div class="summary-card">
+                <div class="summary-val txt-right" id="res-right">0</div>
+                <div class="summary-lbl">Correct (+4)</div>
+            </div>
+            <div class="summary-card">
+                <div class="summary-val txt-wrong" id="res-wrong">0</div>
+                <div class="summary-lbl">Incorrect (-1)</div>
+            </div>
+            <div class="summary-card">
+                <div class="summary-val" id="res-skip">0</div>
+                <div class="summary-lbl">Not Answered</div>
+            </div>
+        </div>
+
+        <h3 style="margin-bottom: 8px; font-size: 1rem;">Answer Key &amp; Review</h3>
+        <div id="res-breakdown"></div>
+
+        <br>
+        <button class="btn btn-signin" onclick="location.reload()">Start New Practice Session</button>
+    </div>
+</div>
+
+<script>
+const questionData = {
+    7: {
+        math: [
+            { q: "यदि किसी संख्या के 3/4 भाग का मान 27 है, तो उस संख्या का 5/6 भाग क्या होगा?", opts: ["30", "32", "36", "25"], ans: 0 },
+            { q: "(-1) × (-1) × (-1) ... (101 बार गुणा करने पर) का मान क्या होगा?", opts: ["1", "-1", "101", "-101"], ans: 1 },
+            { q: "एक वस्तु को ₹480 में बेचने पर 20% की हानि होती है। यदि इसे ₹660 में बेचा जाए, तो कितने प्रतिशत लाभ होगा?", opts: ["5%", "10%", "15%", "20%"], ans: 1 },
+            { q: "यदि 2x + 3 = 11 हो, तो 4x² - 1 का मान क्या होगा?", opts: ["15", "63", "35", "24"], ans: 0 },
+            { q: "दो समानांतर रेखाओं को एक तिर्यक रेखा काटती है। यदि एक अंतः कोण (3y - 10)° और उसी ओर का क्रमागत अंतः कोण (y + 30)° हो, तो y का मान क्या होगा?", opts: ["30", "40", "45", "50"], ans: 1 },
+            { q: "किसी धनराशि पर 8% वार्षिक साधारण ब्याज की दर से 3 वर्ष में प्राप्त ब्याज, उसी राशि पर 12% वार्षिक दर से 2 वर्ष में प्राप्त ब्याज से ₹120 कम है। मूलधन क्या है?", opts: ["₹2000", "₹2500", "₹3000", "₹4000"], ans: 2 },
+            { q: "एक त्रिभुज के दो कोणों का अनुपात 2 : 3 है। यदि तीसरा कोण उन दोनों कोणों के योग से 20° कम है, तो सबसे बड़े कोण का माप क्या होगा?", opts: ["40°", "50°", "60°", "70°"], ans: 2 },
+            { q: "यदि (-2/3)³ × (-2/3)² ÷ (-2/3)⁴ को सरल किया जाए, तो परिणाम क्या होगा?", opts: ["2/3", "-2/3", "4/9", "-4/9"], ans: 1 },
+            { q: "एक आयताकार पार्क की लंबाई उसकी चौड़ाई से 12 m अधिक है। यदि पार्क का परिमाप 104 m है, तो उसका क्षेत्रफल कितना होगा?", opts: ["480 m²", "560 m²", "640 m²", "720 m²"], ans: 2 },
+            { q: "अनुक्रम 3, 7, 15, 31, 63, ... में अगला पद क्या होगा?", opts: ["95", "125", "127", "131"], ans: 2 },
+            { q: "एक कार 3/5 घंटे में 27 km की दूरी तय करती है। इसी चाल से वह 1⅓ घंटे में कितनी दूरी तय करेगी?", opts: ["45 km", "50 km", "60 km", "75 km"], ans: 2 },
+            { q: "संख्याओं 12, 15, 18, 21, 24 का माध्य (Mean) क्या है?", opts: ["15", "18", "20", "19"], ans: 1 },
+            { q: "एक समबाहु त्रिभुज (Equilateral Triangle) का प्रत्येक कोण कितने डिग्री का होता है?", opts: ["45°", "60°", "90°", "120°"], ans: 1 },
+            { q: "(-15) + 8 - (-7) का मान क्या होगा?", opts: ["0", "-14", "14", "-30"], ans: 0 },
+            { q: "एक वृत्त की त्रिज्या 7 cm है, तो उसकी परिधि (Circumference) क्या होगी? (π = 22/7)", opts: ["22 cm", "44 cm", "154 cm", "88 cm"], ans: 1 },
+            { q: "यदि a = 2 और b = -3 है, तो a² + b² का मान क्या होगा?", opts: ["-5", "5", "13", "1"], ans: 2 },
+            { q: "3/5 और 4/5 के बीच कौन-सी परिमेय संख्या स्थित है?", opts: ["7/10", "2/5", "9/10", "1/5"], ans: 0 },
+            { q: "0.05 को प्रतिशत में बदलने पर क्या प्राप्त होगा?", opts: ["0.5%", "5%", "50%", "0.05%"], ans: 1 },
+            { q: "सबसे छोटी अभाज्य संख्या (Smallest Prime Number) कौन-सी है?", opts: ["1", "2", "3", "0"], ans: 1 },
+            { q: "एक वर्ग का क्षेत्रफल 144 cm² है। उसकी एक भुजा की लंबाई क्या होगी?", opts: ["11 cm", "12 cm", "14 cm", "16 cm"], ans: 1 },
+            { q: "यदि x/3 = 9 हो, तो x - 7 का मान क्या होगा?", opts: ["20", "27", "2", "16"], ans: 0 },
+            { q: "दो समानांतर रेखाओं को तिर्यक रेखा काटती है। यदि एक संगत कोण 75° है, तो दूसरा संगत कोण होगा:", opts: ["105°", "75°", "15°", "90°"], ans: 1 },
+            { q: "3.25 × 1000 का मान क्या है?", opts: ["32.5", "325", "3250", "32500"], ans: 2 },
+            { q: "एक घड़ी में 3 बजे दोनों सुइयों के बीच कितने डिग्री का कोण बनता है?", opts: ["60°", "90°", "120°", "180°"], ans: 1 },
+            { q: "यदि A : B = 2 : 3 और B : C = 3 : 5 हो, तो A : C क्या होगा?", opts: ["2 : 5", "3 : 5", "5 : 2", "6 : 15"], ans: 0 }
+        ],
+        science: [
+            { q: "पौधों की पत्तियों में हरा वर्णक (Green Pigment) क्या कहलाता है?", opts: ["हीमोग्लोबिन", "क्लोरोफिल", "जाइलम", "फ्लोएम"], ans: 1 },
+            { q: "मनुष्य के शरीर का सामान्य तापमान कितना होता है?", opts: ["37°C", "98.6°C", "35°C", "42°C"], ans: 0 },
+            { q: "नींबू के रस में कौन-सा अम्ल (Acid) पाया जाता है?", opts: ["लैक्टिक अम्ल", "सिट्रिक अम्ल", "एसिटिक अम्ल", "फॉर्मिक अम्ल"], ans: 1 },
+            { q: "ऊष्मा का स्थानांतरण निर्वात (Vacuum) में किस विधि द्वारा होता है?", opts: ["चालन (Conduction)", "संवहन (Convection)", "विकिरण (Radiation)", "इनमें से कोई नहीं"], ans: 2 },
+            { q: "रेशम कीट पालन को क्या कहा जाता है?", opts: ["एपीकल्चर", "सेरीकल्चर", "पिसीकल्चर", "हॉर्टिकल्चर"], ans: 1 },
+            { q: "चाल (Speed) का SI मात्रक क्या है?", opts: ["km/h", "m/s", "m/s²", "cm/s"], ans: 1 },
+            { q: "अमरबेल (Cuscuta) किस प्रकार के पौधे का उदाहरण है?", opts: ["स्वपोषी", "परजीवी (Parasite)", "मृतजीवी", "कीटभक्षी"], ans: 1 },
+            { q: "लिटमस पत्र को नीले से लाल कौन करता है?", opts: ["क्षार (Base)", "अम्ल (Acid)", "लवण (Salt)", "शुद्ध जल"], ans: 1 },
+            { q: "लोहे में जंग लगना किस प्रकार का परिवर्तन है?", opts: ["भौतिक परिवर्तन", "रासायनिक परिवर्तन", "उत्क्रमणीय परिवर्तन", "इनमें से कोई नहीं"], ans: 1 },
+            { q: "मनुष्य के हृदय में कितने कक्ष (Chambers) होते हैं?", opts: ["2", "3", "4", "6"], ans: 2 },
+            { q: "पौधों में जल का परिवहन किस ऊतक द्वारा होता है?", opts: ["फ्लोएम", "जाइलम", "रंध्र", "जड़ रोम"], ans: 1 },
+            { q: "समतल दर्पण (Plane Mirror) द्वारा बना प्रतिबिंब कैसा होता है?", opts: ["वास्तविक और उल्टा", "आभासी और सीधा", "वास्तविक और सीधा", "वस्तु से बड़ा"], ans: 1 },
+            { q: "विद्युत धारा के चुंबकीय प्रभाव की खोज किसने की थी?", opts: ["न्यूटन", "हंस क्रिश्चियन ओर्स्टेड", "आइंस्टीन", "गैलीलियो"], ans: 1 },
+            { q: "मछलियाँ किस अंग की सहायता से श्वसन करती हैं?", opts: ["फेफड़े", "त्वचा", "गिल्स (गलफड़े)", "श्वासरंध्र"], ans: 2 },
+            { q: "दही में कौन-सा अम्ल पाया जाता है?", opts: ["टार्टरिक अम्ल", "लैक्टिक अम्ल", "ऑक्जेलिक अम्ल", "सल्फ्यूरिक अम्ल"], ans: 1 },
+            { q: "सूर्य के प्रकाश में कितने रंग होते हैं?", opts: ["5", "6", "7", "8"], ans: 2 },
+            { q: "केंचुआ किस अंग से सांस लेता है?", opts: ["गिल्स", "फेफड़े", "नम त्वचा", "मुख"], ans: 2 },
+            { q: "निम्न में से कौन विद्युत का सुचालक (Conductor) है?", opts: ["रबर", "प्लास्टिक", "तांबा (Copper)", "सूखी लकड़ी"], ans: 2 },
+            { q: "मानव शरीर की सबसे बड़ी ग्रंथि कौन-सी है?", opts: ["अग्न्याशय", "यकृत (Liver)", "पीयूष ग्रंथि", "थायरॉइड"], ans: 1 },
+            { q: "वायुमंडल में नाइट्रोजन गैस का प्रतिशत लगभग कितना है?", opts: ["21%", "78%", "0.03%", "50%"], ans: 1 },
+            { q: "वाहनों के साइड मिरर (पश्च दृश्य दर्पण) में किस दर्पण का उपयोग होता है?", opts: ["अवतल दर्पण", "उत्तल दर्पण", "समतल दर्पण", "बेलनाकार दर्पण"], ans: 1 },
+            { q: "अमीबा अपना भोजन किसकी सहायता से पकड़ता है?", opts: ["पक्षाभ", "पादाभ (Pseudopodia)", "कशाभिका", "मुँह"], ans: 1 },
+            { q: "विद्युत फ्यूज किस सिद्धांत पर कार्य करता है?", opts: ["चुंबकीय प्रभाव", "तापीय प्रभाव (Heating Effect)", "रासायनिक प्रभाव", "प्रकाश प्रभाव"], ans: 1 },
+            { q: "विश्व जल दिवस कब मनाया जाता है?", opts: ["5 जून", "22 मार्च", "22 अप्रैल", "16 सितंबर"], ans: 1 },
+            { q: "पृथ्वी पर ऊर्जा का मुख्य स्रोत क्या है?", opts: ["कोयला", "पेट्रोलियम", "सूर्य", "पवन"], ans: 2 }
+        ]
+    },
+    9: {
+        math: [
+            { q: "निम्नलिखित में से कौन-सी एक अपरिमेय संख्या (Irrational Number) है?", opts: ["√4", "√9/16", "√7", "0.25"], ans: 2 },
+            { q: "बहुपद p(x) = 3x³ - 4x² + 7x - 5 का घात (Degree) क्या है?", opts: ["2", "3", "4", "7"], ans: 1 },
+            { q: "यदि x + 1/x = 5 हो, तो x² + 1/x² का मान क्या होगा?", opts: ["25", "23", "27", "21"], ans: 1 },
+            { q: "बिंदु (-4, 5) किस चतुर्थांश (Quadrant) में स्थित है?", opts: ["प्रथम", "द्वितीय", "तृतीय", "चतुर्थ"], ans: 1 },
+            { q: "यदि बहुपद p(x) = x² - 5x + 6 को (x - 2) से भाग दिया जाए, तो शेषफल क्या होगा?", opts: ["0", "2", "-2", "4"], ans: 0 },
+            { q: "एक समबाहु त्रिभुज की भुजा 6 cm है, तो उसका क्षेत्रफल क्या होगा?", opts: ["9√3 cm²", "18√3 cm²", "36√3 cm²", "6√3 cm²"], ans: 0 },
+            { q: "रैखिक समीकरण 2x + 3y = 12 का एक हल निम्न में से कौन-सा है?", opts: ["(2, 3)", "(3, 2)", "(4, 2)", "(1, 4)"], ans: 1 },
+            { q: "एक त्रिभुज के कोणों का अनुपात 2 : 3 : 4 है। सबसे बड़ा कोण कितना होगा?", opts: ["40°", "60°", "80°", "90°"], ans: 2 },
+            { q: "(3 + √3)(3 - √3) का सरल मान क्या होगा?", opts: ["3", "6", "9", "12"], ans: 1 },
+            { q: "यदि दो पूरक कोणों (Complementary Angles) का अंतर 20° है, तो बड़ा कोण क्या होगा?", opts: ["35°", "45°", "55°", "65°"], ans: 2 },
+            { q: "एक शंकु (Cone) की त्रिज्या 7 cm और तिर्यक ऊँचाई 10 cm है। उसका वक्र पृष्ठीय क्षेत्रफल क्या होगा? (π = 22/7)", opts: ["110 cm²", "220 cm²", "440 cm²", "154 cm²"], ans: 1 },
+            { q: "64^(1/2) × 27^(1/3) का मान क्या है?", opts: ["12", "24", "36", "48"], ans: 1 },
+            { q: "एक चक्रीय चतुर्भुज (Cyclic Quadrilateral) के सम्मुख कोणों का योग कितना होता है?", opts: ["90°", "180°", "270°", "360°"], ans: 1 },
+            { q: "एक गोले (Sphere) की त्रिज्या r है, तो उसका आयतन क्या होगा?", opts: ["4πr²", "4/3 πr³", "2/3 πr³", "πr²h"], ans: 1 },
+            { q: "यदि एक पासे (Die) को एक बार फेंका जाए, तो अभाज्य संख्या (Prime Number) आने की प्रायिकता क्या होगी?", opts: ["1/6", "1/3", "1/2", "2/3"], ans: 2 },
+            { q: "वृत्त की सबसे बड़ी जीवा (Chord) क्या कहलाती है?", opts: ["त्रिज्या", "व्यास (Diameter)", "चाप", "स्पर्श रेखा"], ans: 1 },
+            { q: "आंकड़ों 14, 25, 14, 28, 18, 17, 18, 14, 23, 22 का बहुलक (Mode) क्या है?", opts: ["18", "14", "22", "25"], ans: 1 },
+            { q: "x-अक्ष पर स्थित किसी बिंदु के निर्देशांक किस रूप में होते हैं?", opts: ["(0, y)", "(x, 0)", "(x, y)", "(0, 0)"], ans: 1 },
+            { q: "एक बेलन (Cylinder) की त्रिज्या दोगुनी और ऊँचाई आधी कर दी जाए, तो उसका आयतन:", opts: ["दोगुना हो जाएगा", "आधा हो जाएगा", "समान रहेगा", "चार गुना हो जाएगा"], ans: 0 },
+            { q: "√2 का दशमलव प्रसार कैसा होता है?", opts: ["सांत (Terminating)", "असांत आवर्ती", "असांत अनावर्ती (Non-terminating non-repeating)", "इनमें से कोई नहीं"], ans: 2 },
+            { q: "हीरोन के सूत्र (Heron's Formula) में अर्ध-परिमाप s बराबर होता है:", opts: ["a + b + c", "(a + b + c)/2", "(a + b + c)/3", "2(a + b + c)"], ans: 1 },
+            { q: "यदि a + b + c = 0 हो, तो a³ + b³ + c³ का मान किसके बराबर होगा?", opts: ["0", "abc", "3abc", "-3abc"], ans: 2 },
+            { q: "एक समचतुर्भुज (Rhombus) के विकर्ण 10 cm और 8 cm हैं। इसका क्षेत्रफल क्या होगा?", opts: ["80 cm²", "40 cm²", "20 cm²", "18 cm²"], ans: 1 },
+            { q: "किसी घटना की प्रायिकता (Probability) का अधिकतम मान क्या हो सकता है?", opts: ["0", "0.5", "1", "100"], ans: 2 },
+            { q: "0.9999... को p/q के रूप में व्यक्त करने पर क्या मान प्राप्त होगा?", opts: ["9/10", "1", "99/100", "1/9"], ans: 1 }
+        ],
+        science: [
+            { q: "कोशिका का 'पावरहाउस' (Powerhouse of the Cell) किसे कहा जाता है?", opts: ["राइबोसोम", "माइटोकॉन्ड्रिया", "लाइसोसोम", "गॉल्जीकाय"], ans: 1 },
+            { q: "वेग में परिवर्तन की दर (Rate of change of velocity) को क्या कहते हैं?", opts: ["चाल", "विस्थापन", "त्वरण (Acceleration)", "संवेग"], ans: 2 },
+            { q: "निम्न में से कौन-सी एक अदिश राशि (Scalar Quantity) है?", opts: ["वेग", "बल", "त्वरण", "चाल (Speed)"], ans: 3 },
+            { q: "शुष्क बर्फ (Dry Ice) किसे कहते हैं?", opts: ["ठोस जल", "ठोस कार्बन डाइऑक्साइड", "द्रव नाइट्रोजन", "ठोस अमोनिया"], ans: 1 },
+            { q: "न्यूटन का गति का कौन-सा नियम जड़त्व (Inertia) की व्याख्या करता है?", opts: ["प्रथम नियम", "द्वितीय नियम", "तृतीय नियम", "गुरुत्वाकर्षण नियम"], ans: 0 },
+            { q: "परमाणु के नाभिक (Nucleus) की खोज किसने की थी?", opts: ["जे.जे. थॉमसन", "अर्नेस्ट रदरफोर्ड", "जेम्स चैडविक", "नील्स बोर"], ans: 1 },
+            { q: "आत्महत्या की थैली (Suicidal Bag) किस कोशिकांग को कहा जाता है?", opts: ["लाइसोसोम", "राइबोसोम", "केंद्रक", "हरितलवक"], ans: 0 },
+            { q: "ध्वनि तरंगें किस माध्यम में गमन नहीं कर सकती हैं?", opts: ["ठोस", "द्रव", "गैस", "निर्वात (Vacuum)"], ans: 3 },
+            { q: "पृथ्वी की सतह पर गुरुत्वीय त्वरण (g) का मान लगभग कितना होता है?", opts: ["9.8 m/s²", "6.67 m/s²", "10.8 m/s²", "8.9 m/s²"], ans: 0 },
+            { q: "सोडियम (Na) का परमाणु क्रमांक 11 है। इसके बाहरी कोश में कितने संयोजी इलेक्ट्रॉन होंगे?", opts: ["1", "2", "7", "8"], ans: 0 },
+            { q: "कार्य (Work) का SI मात्रक क्या है?", opts: ["वाट", "न्यूटन", "जूल (Joule)", "पास्कल"], ans: 2 },
+            { q: "पौधों में लचीलापन (Flexibility) किस ऊतक के कारण होता है?", opts: ["पैरेन्काइमा", "कॉलेन्काइमा (Collenchyma)", "स्क्लेरेन्काइमा", "जाइलम"], ans: 1 },
+            { q: "20 Hz से कम आवृत्ति वाली ध्वनि तरंगों को क्या कहते हैं?", opts: ["पराश्रव्य (Ultrasonic)", "अवश्रव्य (Infrasonic)", "श्रव्य (Audible)", "सुपरसोनिक"], ans: 1 },
+            { q: "एक मोल (1 Mole) में कणों की संख्या (आवोगाद्रो संख्या) कितनी होती है?", opts: ["6.022 × 10²³", "6.022 × 10²²", "3.011 × 10²³", "6.022 × 10²⁴"], ans: 0 },
+            { q: "किसी वस्तु की गतिज ऊर्जा (Kinetic Energy) का सूत्र क्या है?", opts: ["mgh", "1/2 mv²", "mv", "ma"], ans: 1 },
+            { q: "कोशिका में प्रोटीन का संश्लेषण (Protein Synthesis) कहाँ होता है?", opts: ["माइटोकॉन्ड्रिया", "राइबोसोम", "लाइसोसोम", "रिक्तिका"], ans: 1 },
+            { q: "टिंडल प्रभाव (Tyndall Effect) किस प्रकार के मिश्रण द्वारा प्रदर्शित होता है?", opts: ["वास्तविक विलयन", "कोलाइडल विलयन", "शुद्ध जल", "नमक का घोल"], ans: 1 },
+            { q: "चंद्रमा पर किसी वस्तु का भार पृथ्वी पर उसके भार का कितना गुना होता है?", opts: ["6 गुना", "1/6 गुना", "1/2 गुना", "समान रहता है"], ans: 1 },
+            { q: "निम्न में से कौन-सा एक संक्रामक रोग (Infectious Disease) नहीं है?", opts: ["क्षय रोग (TB)", "हैजा", "मधुमेह (Diabetes)", "मलेरिया"], ans: 2 },
+            { q: "वाष्पीकरण (Evaporation) की क्रिया से क्या उत्पन्न होती है?", opts: ["गर्मी", "शीतलता (Cooling)", "दबाव", "रासायनिक परिवर्तन"], ans: 1 },
+            { q: "समस्थानिकों (Isotopes) में किसकी संख्या समान होती है?", opts: ["न्यूट्रॉन की", "प्रोटॉन की (परमाणु संख्या)", "द्रव्यमान संख्या की", "न्यूक्लिऑन की"], ans: 1 },
+            { q: "रक्त (Blood) किस प्रकार का ऊतक है?", opts: ["उपकला ऊतक", "तरल संयोजी ऊतक", "पेशीय ऊतक", "तंत्रिका ऊतक"], ans: 1 },
+            { q: "यदि किसी पिंड का संवेग दोगुना कर दिया जाए, तो उसकी गतिज ऊर्जा कितने गुना हो जाएगी?", opts: ["दोगुनी", "तीन गुनी", "चार गुनी", "आधी"], ans: 2 },
+            { q: "ग्रीनहाउस प्रभाव के लिए मुख्य रूप से कौन-सी गैस उत्तरदायी है?", opts: ["ऑक्सीजन", "नाइट्रोजन", "कार्बन डाइऑक्साइड", "आर्गन"], ans: 2 },
+            { q: "कोशिका सिद्धांत (Cell Theory) किसने प्रतिपादित किया था?", opts: ["रॉबर्ट हुक", "श्लीडेन और श्वान", "ल्यूवेनहॉक", "रॉबर्ट ब्राउन"], ans: 1 }
+        ]
+    }
+};
+
+// State: 'not-visited' | 'not-answered' | 'answered'
+let qList = [];
+let userPick = [];
+let qState = [];
+let idxNow = 0;
+let remSec = 30 * 60;
+let intervalRef = null;
+let testRunning = false;
+let tabSwitchTotal = 0;
+let regEntered = "";
+let clsChosen = "7";
+let subjChosen = "math";
+
+function proceedToInstructions() {
+    const r = document.getElementById("inp-reg").value.trim();
+    const p = document.getElementById("inp-pass").value.trim();
+    if (!r || !p) {
+        alert("कृपया Registration No और Password (कोई भी) दर्ज करें।");
+        return;
+    }
+    regEntered = r;
+    clsChosen = document.getElementById("sel-class").value;
+    subjChosen = document.getElementById("sel-subject").value;
+
+    document.getElementById("signin-screen").classList.add("hidden");
+    document.getElementById("instructions-screen").classList.remove("hidden");
+}
+
+function backToSignIn() {
+    document.getElementById("instructions-screen").classList.add("hidden");
+    document.getElementById("signin-screen").classList.remove("hidden");
+}
+
+function startTest() {
+    if (!document.getElementById("chk-agree").checked) {
+        alert("कृपया निर्देश स्वीकार करने के लिए चेकबॉक्स पर टिक करें।");
+        return;
+    }
+
+    qList = questionData[clsChosen][subjChosen];
+    userPick = new Array(qList.length).fill(null);
+    qState = new Array(qList.length).fill("not-visited");
+    idxNow = 0;
+    remSec = 30 * 60;
+    testRunning = true;
+
+    document.getElementById("instructions-screen").classList.add("hidden");
+    document.getElementById("exam-screen").classList.remove("hidden");
+    document.getElementById("candidate-bar").classList.remove("hidden");
+    document.getElementById("top-timer").classList.remove("hidden");
+
+    document.getElementById("bar-reg").innerText = regEntered;
+    document.getElementById("bar-class").innerText = "Class " + clsChosen;
+    document.getElementById("bar-subject").innerText = subjChosen === "math" ? "Mathematics" : "Science";
+
+    qState[0] = "not-answered";
+    buildPalette();
+    showQuestion();
+    runTimer();
+}
+
+function buildPalette() {
+    const box = document.getElementById("palette-container");
+    box.innerHTML = "";
+    for (let i = 0; i < qList.length; i++) {
+        const btn = document.createElement("button");
+        btn.className = "num-btn";
+        btn.id = "num-btn-" + i;
+        btn.innerText = i + 1;
+        btn.onclick = () => selectQuestion(i);
+        box.appendChild(btn);
+    }
+}
+
+function showQuestion() {
+    const cur = qList[idxNow];
+    document.getElementById("q-label").innerText = `Question ${idxNow + 1} of ${qList.length}`;
+    document.getElementById("q-prompt").innerText = cur.q;
+
+    const wrap = document.getElementById("q-choices");
+    wrap.innerHTML = "";
+
+    const optTags = ["A", "B", "C", "D"];
+    cur.opts.forEach((txt, oIdx) => {
+        const lbl = document.createElement("label");
+        lbl.className = "opt-item" + (userPick[idxNow] === oIdx ? " active-opt" : "");
+
+        const radio = document.createElement("input");
+        radio.type = "radio";
+        radio.name = "mcq_choice";
+        radio.value = oIdx;
+        radio.checked = userPick[idxNow] === oIdx;
+        radio.onchange = () => {
+            userPick[idxNow] = oIdx;
+            showQuestion();
+        };
+
+        const span = document.createElement("span");
+        span.innerText = `${optTags[oIdx]}. ${txt}`;
+
+        lbl.appendChild(radio);
+        lbl.appendChild(span);
+        wrap.appendChild(lbl);
+    });
+
+    updatePalette();
+}
+
+function updatePalette() {
+    let ansCount = 0, notAnsCount = 0, notVisCount = 0;
+
+    for (let i = 0; i < qList.length; i++) {
+        const b = document.getElementById("num-btn-" + i);
+        b.classList.remove("ans", "notans", "current");
+
+        if (qState[i] === "answered") {
+            b.classList.add("ans");
+            ansCount++;
+        } else if (qState[i] === "not-answered") {
+            b.classList.add("notans");
+            notAnsCount++;
+        } else {
+            notVisCount++;
+        }
+
+        if (i === idxNow) b.classList.add("current");
+    }
+
+    document.getElementById("c-ans").innerText = ansCount;
+    document.getElementById("c-notans").innerText = notAnsCount;
+    document.getElementById("c-notvis").innerText = notVisCount;
+}
+
+function selectQuestion(target) {
+    if (qState[idxNow] === "not-visited") {
+        qState[idxNow] = userPick[idxNow] !== null ? "answered" : "not-answered";
+    }
+    idxNow = target;
+    if (qState[idxNow] === "not-visited") {
+        qState[idxNow] = "not-answered";
+    }
+    showQuestion();
+}
+
+function saveAndMoveNext() {
+    qState[idxNow] = userPick[idxNow] !== null ? "answered" : "not-answered";
+    if (idxNow < qList.length - 1) {
+        idxNow++;
+        if (qState[idxNow] === "not-visited") qState[idxNow] = "not-answered";
+        showQuestion();
+    } else {
+        updatePalette();
+    }
+}
+
+function clearChoice() {
+    userPick[idxNow] = null;
+    qState[idxNow] = "not-answered";
+    showQuestion();
+}
+
+function movePrevious() {
+    if (idxNow > 0) {
+        idxNow--;
+        if (qState[idxNow] === "not-visited") qState[idxNow] = "not-answered";
+        showQuestion();
+    }
+}
+
+function runTimer() {
+    intervalRef = setInterval(() => {
+        remSec--;
+        const mins = Math.floor(remSec / 60);
+        const secs = remSec % 60;
+        document.getElementById("top-timer").innerText =
+            `Time Left: ${String(mins).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
+
+        if (remSec <= 0) {
+            clearInterval(intervalRef);
+            alert("समय समाप्त हो गया है! परीक्षा Auto-Submit हो रही है।");
+            submitTest();
+        }
+    }, 1000);
+}
+
+function confirmSubmitTest() {
+    const done = userPick.filter(x => x !== null).length;
+    if (confirm(`आपने ${qList.length} में से ${done} प्रश्नों के उत्तर दिए हैं। क्या आप परीक्षा Submit करना चाहते हैं?`)) {
+        submitTest();
+    }
+}
+
+function submitTest() {
+    clearInterval(intervalRef);
+    testRunning = false;
+
+    document.getElementById("exam-screen").classList.add("hidden");
+    document.getElementById("candidate-bar").classList.add("hidden");
+    document.getElementById("top-timer").classList.add("hidden");
+    document.getElementById("result-screen").classList.remove("hidden");
+
+    const elapsed = (30 * 60) - remSec;
+    const em = Math.floor(elapsed / 60);
+    const es = elapsed % 60;
+
+    document.getElementById("res-reg").innerText = regEntered;
+    document.getElementById("res-class").innerText = "Class " + clsChosen;
+    document.getElementById("res-subj").innerText = subjChosen === "math" ? "Mathematics" : "Science";
+    document.getElementById("res-time").innerText = `${em}m ${es}s`;
+
+    let right = 0, wrong = 0, skip = 0;
+    const outBox = document.getElementById("res-breakdown");
+    outBox.innerHTML = "";
+
+    qList.forEach((item, i) => {
+        const picked = userPick[i];
+        let statusLine = "";
+
+        if (picked === null) {
+            skip++;
+            statusLine = `<span style="color:#4b5563; font-weight:600;">Not Answered (0)</span>`;
+        } else if (picked === item.ans) {
+            right++;
+            statusLine = `<span class="txt-right">Correct (+4) — Your Answer: ${item.opts[picked]}</span>`;
+        } else {
+            wrong++;
+            statusLine = `<span class="txt-wrong">Wrong (-1) — Your Answer: ${item.opts[picked]}</span>`;
+        }
+
+        const div = document.createElement("div");
+        div.className = "ans-row";
+        div.innerHTML = `
+            <div><strong>Q${i + 1}.</strong> ${item.q}</div>
+            <div style="margin-top:3px;">${statusLine}</div>
+            <div style="font-size:0.85rem; color:#374151;">Correct Answer: <strong>${item.opts[item.ans]}</strong></div>
+        `;
+        outBox.appendChild(div);
+    });
+
+    const finalScore = (right * 4) - (wrong * 1);
+    document.getElementById("res-score").innerText = finalScore;
+    document.getElementById("res-right").innerText = right;
+    document.getElementById("res-wrong").innerText = wrong;
+    document.getElementById("res-skip").innerText = skip;
+}
+
+document.addEventListener("visibilitychange", () => {
+    if (document.hidden && testRunning) {
+        tabSwitchTotal++;
+        document.getElementById("tab-alert").classList.remove("hidden");
+        document.getElementById("switch-num").innerText = tabSwitchTotal;
+    }
+});
+</script>
+
+</body>
+</html>
